@@ -18,7 +18,7 @@
     <meta property="og:url" content="{{ request.build_absolute_uri }}">
     <meta property="og:title" content="{% block og_title %}{{ settings.store_name }} - {{ settings.tagline }}{% endblock %}">
     <meta property="og:description" content="{% block og_description %}Discover premium handcrafted footwear and designer kids' apparel. Quality and style for every occasion.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-main.jpg' %}{% endblock %}">
+    <meta property="og:image" content="{% block og_image %}{% if settings.banner_image %}{{ request.scheme }}://{{ request.get_host }}{{ settings.banner_image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-main.jpg' %}{% endif %}{% endblock %}">
     <meta property="og:site_name" content="{{ settings.store_name }}">
 
     <!-- Twitter -->
@@ -26,7 +26,7 @@
     <meta name="twitter:url" content="{{ request.build_absolute_uri }}">
     <meta name="twitter:title" content="{% block twitter_title %}{{ settings.store_name }}{% endblock %}">
     <meta name="twitter:description" content="{% block twitter_description %}Premium Artisanal Footwear and Kids Fashion.{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}{% static 'img/og-main.jpg' %}{% endblock %}">
+    <meta name="twitter:image" content="{% block twitter_image %}{% if settings.banner_image %}{{ request.scheme }}://{{ request.get_host }}{{ settings.banner_image.url }}{% else %}{% static 'img/og-main.jpg' %}{% endif %}{% endblock %}">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -81,9 +81,13 @@
             <div class="flex justify-between items-center h-16 md:h-20">
                 <!-- Logo -->
                 <a href="{% url 'core:home' %}" class="flex items-center gap-2 group">
+                    {% if settings.logo %}
+                    <img src="{{ settings.logo.url }}" alt="{{ settings.store_name }}" class="h-8 md:h-10 w-auto object-contain transition-transform group-hover:scale-105">
+                    {% else %}
                     <span class="text-2xl md:text-3xl font-display font-bold text-maroon-800 group-hover:text-gold-600 transition-colors uppercase tracking-tight">
                         {{ settings.store_name|default:"Elegance" }}
                     </span>
+                    {% endif %}
                     <span class="hidden sm:block text-xs text-beige-600 font-body tracking-widest uppercase">{{ settings.tagline|default:"Premium Fashion" }}</span>
                 </a>
 
@@ -91,8 +95,8 @@
                 <div class="hidden md:flex items-center gap-8">
                     <a href="{% url 'core:home' %}" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Home</a>
                     <a href="{% url 'products:shop' %}" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Collection</a>
-                    <a href="{% url 'products:shop' %}?category=rajasthani-ladies-jutti" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Footwear</a>
-                    <a href="{% url 'products:shop' %}?category=kids-fancy-frocks" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Kids Wear</a>
+                    <a href="{% url 'products:shop' %}rajasthani-ladies-jutti/" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Footwear</a>
+                    <a href="{% url 'products:shop' %}kids-fancy-frocks/" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Kids Wear</a>
                 </div>
 
                 <!-- Cart + Mobile Toggle -->
@@ -118,8 +122,8 @@
                 <div class="flex flex-col gap-3 pt-4">
                     <a href="{% url 'core:home' %}" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Home</a>
                     <a href="{% url 'products:shop' %}" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Shop All</a>
-                    <a href="{% url 'products:shop' %}?category=rajasthani-ladies-jutti" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Jutti Collection</a>
-                    <a href="{% url 'products:shop' %}?category=kids-fancy-frocks" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Kids Frocks</a>
+                    <a href="{% url 'products:shop' %}rajasthani-ladies-jutti/" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Jutti Collection</a>
+                    <a href="{% url 'products:shop' %}kids-fancy-frocks/" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Kids Frocks</a>
                 </div>
             </div>
         </div>
@@ -155,8 +159,8 @@
                 <div>
                     <h4 class="font-display text-lg font-semibold text-gold-400 mb-4">Categories</h4>
                     <ul class="space-y-2 text-sm">
-                        <li><a href="{% url 'products:shop' %}?category=rajasthani-ladies-jutti" class="text-beige-400 hover:text-gold-400 transition-colors">Rajasthani Jutti</a></li>
-                        <li><a href="{% url 'products:shop' %}?category=kids-fancy-frocks" class="text-beige-400 hover:text-gold-400 transition-colors">Kids Frocks</a></li>
+                        <li><a href="{% url 'products:shop' %}rajasthani-ladies-jutti/" class="text-beige-400 hover:text-gold-400 transition-colors">Rajasthani Jutti</a></li>
+                        <li><a href="{% url 'products:shop' %}kids-fancy-frocks/" class="text-beige-400 hover:text-gold-400 transition-colors">Kids Frocks</a></li>
                     </ul>
                 </div>
                 <!-- Contact -->

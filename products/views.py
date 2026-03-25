@@ -2,15 +2,25 @@ from django.shortcuts import render, get_object_or_404
 from .models import Product, Category
 
 
-def shop(request):
+def shop(request, category_slug=None):
     products = Product.objects.filter(in_stock=True)
     categories = Category.objects.all()
 
     # Filter by category
     active_category = None
-    category_slug = request.GET.get('category')
+    
+    # 1. Use category_slug from URL if available
     if category_slug:
-        active_category = get_object_or_404(Category, slug=category_slug)
+        active_category = Category.objects.filter(slug=category_slug).first()
+    
+    # 2. Fallback to query param if no slug in URL
+    if not active_category:
+        category_query = request.GET.get('category')
+        if category_query:
+            active_category = Category.objects.filter(slug=category_query).first()
+            category_slug = category_query
+
+    if active_category:
         products = products.filter(category=active_category)
 
     # Filter by price range

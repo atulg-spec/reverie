@@ -3,7 +3,7 @@
 
 {% block title %}{% if active_category %}{{ active_category.name }}{% else %}Collection{% endif %} - {{ settings.store_name }}{% endblock %}
 {% block meta_description %}{% if active_category %}{{ active_category.description|truncatechars:160 }}{% else %}Explore our premium collection of artisanal footwear and designer kids fashion.{% endif %}{% endblock %}
-{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% if active_category %}{% url 'products:shop' %}?category={{ active_category.slug }}{% else %}{% url 'products:shop' %}{% endif %}{% endblock %}
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% if active_category %}{% url 'products:shop_by_category' active_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}{% endblock %}
 
 {% block og_title %}{% if active_category %}{{ active_category.name }}{% else %}Our Collection{% endif %} | {{ settings.store_name }}{% endblock %}
 {% block og_description %}{% if active_category %}{{ active_category.description|truncatechars:160 }}{% else %}Premium artisanal fashion for the modern lifestyle.{% endif %}{% endblock %}
@@ -35,17 +35,23 @@
                         <div class="mb-6">
                             <h4 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Category</h4>
                             <div class="space-y-2">
-                                <label class="flex items-center gap-2 cursor-pointer group">
-                                    <input type="radio" name="category" value="" {% if not current_category %}checked{% endif %} 
-                                           class="text-maroon-700 focus:ring-maroon-500" onchange="this.form.submit()">
-                                    <span class="font-body text-sm text-gray-600 group-hover:text-maroon-700 transition-colors">All Products</span>
-                                </label>
+                                <a href="{% url 'products:shop' %}" class="flex items-center gap-2 group">
+                                    <div class="w-4 h-4 rounded-full border border-maroon-300 flex items-center justify-center {% if not current_category %}border-maroon-700{% endif %}">
+                                        {% if not current_category %}
+                                        <div class="w-2 h-2 rounded-full bg-maroon-700"></div>
+                                        {% endif %}
+                                    </div>
+                                    <span class="font-body text-sm {% if not current_category %}text-maroon-900 font-semibold{% else %}text-gray-600{% endif %} group-hover:text-maroon-700 transition-colors">All Products</span>
+                                </a>
                                 {% for cat in categories %}
-                                <label class="flex items-center gap-2 cursor-pointer group">
-                                    <input type="radio" name="category" value="{{ cat.slug }}" {% if current_category == cat.slug %}checked{% endif %}
-                                           class="text-maroon-700 focus:ring-maroon-500" onchange="this.form.submit()">
-                                    <span class="font-body text-sm text-gray-600 group-hover:text-maroon-700 transition-colors">{{ cat.name }}</span>
-                                </label>
+                                <a href="{% url 'products:shop_by_category' cat.slug %}" class="flex items-center gap-2 group">
+                                    <div class="w-4 h-4 rounded-full border border-maroon-300 flex items-center justify-center {% if current_category == cat.slug %}border-maroon-700{% endif %}">
+                                        {% if current_category == cat.slug %}
+                                        <div class="w-2 h-2 rounded-full bg-maroon-700"></div>
+                                        {% endif %}
+                                    </div>
+                                    <span class="font-body text-sm {% if current_category == cat.slug %}text-maroon-900 font-semibold{% else %}text-gray-600{% endif %} group-hover:text-maroon-700 transition-colors">{{ cat.name }}</span>
+                                </a>
                                 {% endfor %}
                             </div>
                         </div>
