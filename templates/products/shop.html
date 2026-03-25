@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if active_category %}{{ active_category.name }}{% else %}Collection{% endif %} - {{ settings.store_name }}{% endblock %}
+{% block meta_description %}{% if active_category %}{{ active_category.description|truncatechars:160 }}{% else %}Explore our premium collection of artisanal footwear and designer kids fashion.{% endif %}{% endblock %}
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% if active_category %}{% url 'products:shop' %}?category={{ active_category.slug }}{% else %}{% url 'products:shop' %}{% endif %}{% endblock %}
+
+{% block og_title %}{% if active_category %}{{ active_category.name }}{% else %}Our Collection{% endif %} | {{ settings.store_name }}{% endblock %}
+{% block og_description %}{% if active_category %}{{ active_category.description|truncatechars:160 }}{% else %}Premium artisanal fashion for the modern lifestyle.{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Page Header -->
+<section class="bg-gradient-to-r from-maroon-900 to-maroon-800 py-12 md:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="font-display text-3xl md:text-5xl font-bold text-white mb-2">
+            {% if active_category %}{{ active_category.name }}{% else %}{{ settings.store_name|default:"Our" }} Collection{% endif %}
+        </h1>
+        <p class="text-beige-200 font-body text-sm md:text-base">
+            {% if active_category %}{{ active_category.description }}{% else %}{{ settings.tagline|default:"Handpicked designs, crafted with love" }}{% endif %}
+        </p>
+    </div>
+</section>
+
+<section class="py-10 md:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            
+            <!-- Sidebar Filters -->
+            <aside class="lg:w-64 flex-shrink-0">
+                <div class="glass-card bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-beige-200 shadow-sm sticky top-24">
+                    <h3 class="font-display text-lg font-semibold text-maroon-900 mb-4">Filters</h3>
+                    
+                    <form method="GET" action="{% url 'products:shop' %}" id="filter-form">
+                        <!-- Categories -->
+                        <div class="mb-6">
+                            <h4 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Category</h4>
+                            <div class="space-y-2">
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="radio" name="category" value="" {% if not current_category %}checked{% endif %} 
+                                           class="text-maroon-700 focus:ring-maroon-500" onchange="this.form.submit()">
+                                    <span class="font-body text-sm text-gray-600 group-hover:text-maroon-700 transition-colors">All Products</span>
+                                </label>
+                                {% for cat in categories %}
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="radio" name="category" value="{{ cat.slug }}" {% if current_category == cat.slug %}checked{% endif %}
+                                           class="text-maroon-700 focus:ring-maroon-500" onchange="this.form.submit()">
+                                    <span class="font-body text-sm text-gray-600 group-hover:text-maroon-700 transition-colors">{{ cat.name }}</span>
+                                </label>
+                                {% endfor %}
+                            </div>
+                        </div>
+
+                        <!-- Price Range -->
+                        <div class="mb-6">
+                            <h4 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Price Range</h4>
+                            <div class="flex gap-2 items-center">
+                                <input type="number" name="min_price" value="{{ min_price }}" placeholder="₹ Min" 
+                                       class="w-full px-3 py-2 border border-beige-300 rounded-lg text-sm font-body focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60">
+                                <span class="text-gray-400">-</span>
+                                <input type="number" name="max_price" value="{{ max_price }}" placeholder="₹ Max" 
+                                       class="w-full px-3 py-2 border border-beige-300 rounded-lg text-sm font-body focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60">
+                            </div>
+                            <button type="submit" class="mt-3 w-full py-2 bg-maroon-800 text-white font-body text-xs font-semibold rounded-lg hover:bg-maroon-700 transition-colors">
+                                Apply
+                            </button>
+                        </div>
+
+                        <!-- Sort -->
+                        <div>
+                            <h4 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Sort By</h4>
+                            <select name="sort" class="w-full px-3 py-2 border border-beige-300 rounded-lg text-sm font-body focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60"
+                                    onchange="this.form.submit()">
+                                <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
+                                <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low → High</option>
+                                <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High → Low</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+            </aside>
+
+            <!-- Products Grid -->
+            <div class="flex-1">
+                <div class="flex items-center justify-between mb-6">
+                    <p class="font-body text-sm text-gray-500">{{ products|length }} product{{ products|length|pluralize }} found</p>
+                </div>
+
+                {% if products %}
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                    {% for product in products %}
+                    <a href="{% url 'products:product_detail' product.slug %}" class="group" id="product-{{ product.id }}">
+                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-beige-100">
+                            <div class="relative aspect-[3/4] overflow-hidden bg-beige-50">
+                                {% if product.primary_image %}
+                                <img src="{{ product.primary_image.image.url }}" 
+                                     alt="{{ product.name }}" 
+                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                                     loading="lazy">
+                                {% else %}
+                                <div class="w-full h-full flex items-center justify-center text-beige-400">
+                                    <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                                </div>
+                                {% endif %}
+                                {% if product.discount_percent %}
+                                <span class="absolute top-3 left-3 bg-maroon-700 text-white text-xs font-body font-semibold px-2 py-1 rounded-sm">
+                                    -{{ product.discount_percent }}%
+                                </span>
+                                {% endif %}
+                                {% if not product.in_stock %}
+                                <div class="absolute inset-0 bg-gray-900/50 flex items-center justify-center">
+                                    <span class="bg-white/90 text-gray-900 font-body font-semibold text-sm px-4 py-2 rounded">Out of Stock</span>
+                                </div>
+                                {% endif %}
+                                <div class="absolute inset-0 bg-maroon-950/0 group-hover:bg-maroon-950/10 transition-colors duration-300"></div>
+                            </div>
+                            <div class="p-3 md:p-4">
+                                <p class="text-xs text-gold-700 font-body tracking-wide uppercase mb-1">{{ product.category.name }}</p>
+                                <h3 class="font-display text-sm md:text-base font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-maroon-700 transition-colors">{{ product.name }}</h3>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-maroon-800 font-body font-bold text-base">₹{{ product.price|floatformat:0 }}</span>
+                                    {% if product.original_price %}
+                                    <span class="text-gray-400 font-body text-xs line-through">₹{{ product.original_price|floatformat:0 }}</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% else %}
+                <div class="text-center py-20">
+                    <svg class="w-16 h-16 text-beige-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+                    <h3 class="font-display text-xl text-gray-600 mb-2">No products found</h3>
+                    <p class="text-gray-400 font-body text-sm">Try adjusting your filters or browse all products.</p>
+                    <a href="{% url 'products:shop' %}" class="inline-block mt-4 text-maroon-700 font-body font-semibold text-sm hover:underline">Clear Filters</a>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

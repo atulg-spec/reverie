@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Order Confirmed - {{ settings.store_name|default:"Elegance" }}{% endblock %}
+
+{% block content %}
+<section class="min-h-[70vh] flex items-center justify-center py-16">
+    <div class="max-w-xl mx-auto px-4 text-center">
+        <!-- Success Animation -->
+        <div class="w-24 h-24 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-8 animate-bounce-slow">
+            <svg class="w-12 h-12 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+        </div>
+
+        <h1 class="font-display text-3xl md:text-4xl font-bold text-maroon-900 mb-3">Order Placed!</h1>
+        <p class="text-gray-500 font-body text-base mb-8">Thank you for your order. We'll verify your payment and get back to you soon.</p>
+
+        <!-- Order Details Card -->
+        <div class="glass-card bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-beige-200 shadow-md text-left mb-8">
+            <div class="flex items-center justify-between mb-4 pb-4 border-b border-beige-200">
+                <div>
+                    <p class="font-body text-xs text-gray-500 uppercase tracking-wide">Order Number</p>
+                    <p class="font-display text-xl font-bold text-maroon-800">#{{ order.id }}</p>
+                </div>
+                <span class="px-3 py-1.5 bg-yellow-100 text-yellow-700 font-body text-xs font-semibold rounded-full">
+                    ⏳ {{ order.get_status_display }}
+                </span>
+            </div>
+
+            <div class="space-y-3">
+                <div class="flex justify-between font-body text-sm">
+                    <span class="text-gray-500">Name</span>
+                    <span class="text-gray-900">{{ order.full_name }}</span>
+                </div>
+                <div class="flex justify-between font-body text-sm">
+                    <span class="text-gray-500">Email</span>
+                    <span class="text-gray-900">{{ order.email }}</span>
+                </div>
+                <div class="flex justify-between font-body text-sm">
+                    <span class="text-gray-500">Phone</span>
+                    <span class="text-gray-900">{{ order.phone }}</span>
+                </div>
+                <div class="flex justify-between font-body text-sm">
+                    <span class="text-gray-500">Address</span>
+                    <span class="text-gray-900 text-right max-w-xs">{{ order.address }}, {{ order.city }}, {{ order.state }} - {{ order.pincode }}</span>
+                </div>
+            </div>
+
+            <div class="border-t border-beige-200 mt-4 pt-4">
+                <h3 class="font-body text-sm font-semibold text-gray-700 mb-3">Items Ordered</h3>
+                {% for item in order.items.all %}
+                <div class="flex justify-between py-2 border-b border-beige-100 last:border-0">
+                    <div>
+                        <p class="font-body text-sm text-gray-900">{{ item.product_name }}</p>
+                        {% if item.size %}<p class="text-xs text-gray-500">Size: {{ item.size }}</p>{% endif %}
+                        <p class="text-xs text-gray-500">Qty: {{ item.quantity }}</p>
+                    </div>
+                    <span class="font-body text-sm font-semibold text-maroon-800">₹{{ item.subtotal|floatformat:0 }}</span>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="border-t border-beige-200 mt-4 pt-4 flex justify-between">
+                <span class="font-body font-bold text-gray-900">Total Paid</span>
+                <span class="font-body font-bold text-xl text-maroon-800">₹{{ order.total|floatformat:0 }}</span>
+            </div>
+        </div>
+
+        <!-- What's Next -->
+        <div class="bg-maroon-50 rounded-xl p-5 border border-maroon-100 text-left mb-8">
+            <h3 class="font-body text-sm font-semibold text-maroon-800 mb-2">What happens next?</h3>
+            <ul class="space-y-1.5 font-body text-xs text-maroon-700">
+                <li>✅ Our team will verify your payment screenshot</li>
+                <li>📦 Once confirmed, your order will be packed with care</li>
+                <li>🚚 You'll receive shipping updates via email</li>
+                <li>🎉 Your handcrafted items will be at your doorstep soon!</li>
+            </ul>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="{% url 'products:shop' %}" 
+               class="inline-flex items-center justify-center px-6 py-3 bg-maroon-800 hover:bg-maroon-700 text-white font-body font-semibold text-sm rounded-lg transition-all duration-300 gap-2">
+                Continue Shopping
+            </a>
+            <a href="{% url 'core:home' %}" 
+               class="inline-flex items-center justify-center px-6 py-3 border-2 border-maroon-800 text-maroon-800 font-body font-semibold text-sm rounded-lg hover:bg-maroon-800 hover:text-white transition-all duration-300">
+                Back to Home
+            </a>
+        </div>
+    </div>
+</section>
+
+<style>
+    @keyframes bounce-slow {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-10px); }
+    }
+    .animate-bounce-slow { animation: bounce-slow 2s ease-in-out infinite; }
+</style>
+{% endblock %}

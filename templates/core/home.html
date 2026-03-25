@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ settings.store_name }} - {{ settings.tagline }}{% endblock %}
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'core:home' %}{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="relative min-h-[85vh] flex items-center overflow-hidden">
+    <div class="absolute inset-0 bg-gradient-to-r from-maroon-950/90 via-maroon-900/70 to-transparent z-10"></div>
+    <img src="https://images.unsplash.com/photo-1490481651871-ab68de25d43d?w=1920&q=80" 
+         alt="Premium textures" 
+         class="absolute inset-0 w-full h-full object-cover"
+         loading="eager">
+    
+    <!-- Decorative Pattern Overlay -->
+    <div class="absolute inset-0 z-10 opacity-10" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2260%22 height=%2260%22><circle cx=%2230%22 cy=%2230%22 r=%222%22 fill=%22%23d4a017%22/></svg>'); background-size: 60px 60px;"></div>
+    
+    <div class="relative z-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <div class="max-w-2xl">
+            <span class="inline-block px-4 py-1.5 bg-gold-500/20 border border-gold-500/40 rounded-full text-gold-200 text-xs font-body tracking-widest uppercase mb-6 backdrop-blur-sm">
+                ✦ Handcrafted Heritage ✦
+            </span>
+            <h1 class="font-display text-4xl sm:text-5xl md:text-7xl font-bold text-white leading-tight mb-6">
+                {{ settings.store_name|default:"Elegance" }} <br>
+                <span class="text-gold-400 italic">Curated</span><br>
+                Collection
+            </h1>
+            <p class="text-base sm:text-lg text-beige-200 font-body font-light leading-relaxed mb-8 max-w-lg">
+                {{ settings.tagline|default:"Premium Artisanal Fashion" }}. Handcrafted with precision and care for the modern fashion connoisseur.
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4">
+                <a href="{% url 'products:shop' %}" 
+                   class="inline-flex items-center justify-center px-8 py-3.5 bg-gold-500 hover:bg-gold-600 text-maroon-950 font-body font-semibold text-sm tracking-wide rounded-sm transition-all duration-300 hover:shadow-lg hover:shadow-gold-500/30 hover:-translate-y-0.5">
+                    Shop Collection
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                </a>
+                <a href="#categories" 
+                   class="inline-flex items-center justify-center px-8 py-3.5 border border-beige-300/40 text-beige-100 font-body font-medium text-sm tracking-wide rounded-sm hover:bg-white/10 backdrop-blur-sm transition-all duration-300">
+                    Explore Categories
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Bar -->
+<section class="bg-maroon-900 py-6">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-center">
+            <div class="flex flex-col items-center gap-1.5">
+                <span class="text-gold-400 text-xl">🪡</span>
+                <span class="text-beige-200 text-xs font-body tracking-wide">Handcrafted</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5">
+                <span class="text-gold-400 text-xl">🚚</span>
+                <span class="text-beige-200 text-xs font-body tracking-wide">Free Delivery ₹999+</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5">
+                <span class="text-gold-400 text-xl">💎</span>
+                <span class="text-beige-200 text-xs font-body tracking-wide">Premium Quality</span>
+            </div>
+            <div class="flex flex-col items-center gap-1.5">
+                <span class="text-gold-400 text-xl">🔄</span>
+                <span class="text-beige-200 text-xs font-body tracking-wide">Easy Returns</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Categories Section -->
+<section id="categories" class="py-16 md:py-24 bg-ivory-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 md:mb-16">
+            <span class="text-gold-600 font-body text-xs tracking-[0.3em] uppercase">Explore Our World</span>
+            <h2 class="font-display text-3xl md:text-5xl font-bold text-maroon-900 mt-3">Our Collections</h2>
+            <div class="w-20 h-0.5 bg-gold-500 mx-auto mt-4"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
+            <!-- Jutti Category -->
+            <a href="{% url 'products:shop' %}?category=rajasthani-ladies-jutti" 
+               class="group relative overflow-hidden rounded-lg aspect-[4/3] shadow-xl">
+                <div class="absolute inset-0 bg-gradient-to-t from-maroon-950/80 via-maroon-900/30 to-transparent z-10 group-hover:from-maroon-950/90 transition-all duration-500"></div>
+                <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?w=800&q=80" 
+                     alt="Artisanal Footwear Collection" 
+                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                     loading="lazy">
+                <div class="absolute bottom-6 left-6 z-20">
+                    <h3 class="font-display text-2xl md:text-3xl font-bold text-white mb-1">Artisanal Footwear</h3>
+                    <p class="text-beige-200 text-sm font-body">Handcrafted Ladies Collection</p>
+                    <span class="inline-flex items-center mt-3 text-gold-400 text-sm font-body font-medium group-hover:translate-x-2 transition-transform duration-300">
+                        Shop Now <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
+                </div>
+            </a>
+            <!-- Frocks Category -->
+            <a href="{% url 'products:shop' %}?category=kids-fancy-frocks"
+               class="group relative overflow-hidden rounded-lg aspect-[4/3] shadow-xl">
+                <div class="absolute inset-0 bg-gradient-to-t from-maroon-950/80 via-maroon-900/30 to-transparent z-10 group-hover:from-maroon-950/90 transition-all duration-500"></div>
+                <img src="https://images.unsplash.com/photo-1518831959646-742c3a14ebf7?w=800&q=80" 
+                     alt="Kids Fancy Frocks Collection" 
+                     class="absolute inset-0 w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                     loading="lazy">
+                <div class="absolute bottom-6 left-6 z-20">
+                    <h3 class="font-display text-2xl md:text-3xl font-bold text-white mb-1">Kids Fancy Frocks</h3>
+                    <p class="text-beige-200 text-sm font-body">Adorable Styles for 0–5 Years</p>
+                    <span class="inline-flex items-center mt-3 text-gold-400 text-sm font-body font-medium group-hover:translate-x-2 transition-transform duration-300">
+                        Shop Now <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+                    </span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Products -->
+<section class="py-16 md:py-24 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 md:mb-16">
+            <span class="text-gold-600 font-body text-xs tracking-[0.3em] uppercase">Curated For You</span>
+            <h2 class="font-display text-3xl md:text-5xl font-bold text-maroon-900 mt-3">Featured Collection</h2>
+            <div class="w-20 h-0.5 bg-gold-500 mx-auto mt-4"></div>
+        </div>
+        
+        {% if featured_products %}
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+            {% for product in featured_products %}
+            <a href="{% url 'products:product_detail' product.slug %}" class="group">
+                <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-beige-100">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-beige-50">
+                        {% if product.primary_image %}
+                        <img src="{{ product.primary_image.image.url }}" 
+                             alt="{{ product.name }}" 
+                             class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                             loading="lazy">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-beige-400">
+                            <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+                        </div>
+                        {% endif %}
+                        {% if product.discount_percent %}
+                        <span class="absolute top-3 left-3 bg-maroon-700 text-white text-xs font-body font-semibold px-2 py-1 rounded-sm">
+                            -{{ product.discount_percent }}%
+                        </span>
+                        {% endif %}
+                        <div class="absolute inset-0 bg-maroon-950/0 group-hover:bg-maroon-950/10 transition-colors duration-300"></div>
+                    </div>
+                    <div class="p-3 md:p-4">
+                        <p class="text-xs text-gold-700 font-body tracking-wide uppercase mb-1">{{ product.category.name }}</p>
+                        <h3 class="font-display text-sm md:text-base font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-maroon-700 transition-colors">{{ product.name }}</h3>
+                        <div class="flex items-center gap-2">
+                            <span class="text-maroon-800 font-body font-bold text-base">₹{{ product.price|floatformat:0 }}</span>
+                            {% if product.original_price %}
+                            <span class="text-gray-400 font-body text-xs line-through">₹{{ product.original_price|floatformat:0 }}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-10">
+            <a href="{% url 'products:shop' %}" 
+               class="inline-flex items-center px-8 py-3 border-2 border-maroon-800 text-maroon-800 font-body font-semibold text-sm tracking-wide rounded-sm hover:bg-maroon-800 hover:text-white transition-all duration-300">
+                View All Products
+                <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+            </a>
+        </div>
+        {% else %}
+        <p class="text-center text-gray-500 font-body">Products coming soon! Check back later.</p>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Testimonials -->
+<section class="py-16 md:py-24 bg-gradient-to-b from-beige-50 to-ivory-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12 md:mb-16">
+            <span class="text-gold-600 font-body text-xs tracking-[0.3em] uppercase">What They Say</span>
+            <h2 class="font-display text-3xl md:text-5xl font-bold text-maroon-900 mt-3">Customer Love</h2>
+            <div class="w-20 h-0.5 bg-gold-500 mx-auto mt-4"></div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+            {% for testimonial in testimonials %}
+            <div class="glass-card bg-white/70 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-beige-200 shadow-sm hover:shadow-lg transition-all duration-500 hover:-translate-y-1">
+                <div class="flex gap-1 mb-4">
+                    {% for i in "12345" %}
+                    {% if forloop.counter <= testimonial.rating %}
+                    <span class="text-gold-500">★</span>
+                    {% else %}
+                    <span class="text-gray-300">★</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+                <p class="text-gray-600 font-body text-sm leading-relaxed mb-6 italic">"{{ testimonial.text }}"</p>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 bg-maroon-100 rounded-full flex items-center justify-center text-maroon-700 font-display font-bold text-sm">
+                        {{ testimonial.name|first }}
+                    </div>
+                    <div>
+                        <p class="font-body font-semibold text-gray-900 text-sm">{{ testimonial.name }}</p>
+                        <p class="font-body text-xs text-gray-500">{{ testimonial.location }}</p>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="relative py-20 md:py-28 overflow-hidden">
+    <div class="absolute inset-0 bg-maroon-900"></div>
+    <div class="absolute inset-0 opacity-20" style="background-image: url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2240%22 height=%2240%22><path d=%22M20 0L40 20L20 40L0 20Z%22 fill=%22none%22 stroke=%22%23d4a017%22 stroke-width=%220.5%22/></svg>'); background-size: 40px 40px;"></div>
+    <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="font-display text-3xl md:text-5xl font-bold text-white mb-4">{{ settings.store_name|default:"Elegance" }} | {{ settings.tagline|default:"Timeless Style" }}</h2>
+        <p class="text-beige-200 font-body text-base md:text-lg mb-8 max-w-2xl mx-auto">Discover unique designs that blend timeless traditions with modern fashion. Each piece carries the soul of master craftsmanship.</p>
+        <a href="{% url 'products:shop' %}" 
+           class="inline-flex items-center px-10 py-4 bg-gold-500 hover:bg-gold-400 text-maroon-950 font-body font-bold text-sm tracking-wide rounded-sm transition-all duration-300 hover:shadow-lg hover:shadow-gold-500/30 hover:-translate-y-0.5">
+            Start Shopping
+            <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+    </div>
+</section>
+{% endblock %}

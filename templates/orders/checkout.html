@@ -1,0 +1,325 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Checkout - {{ settings.store_name|default:"Elegance" }}{% endblock %}
+
+{% block content %}
+<section class="bg-gradient-to-r from-maroon-900 to-maroon-800 py-10 md:py-14">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h1 class="font-display text-3xl md:text-4xl font-bold text-white mb-1">Checkout</h1>
+        <p class="text-beige-200 font-body text-sm">Complete your order</p>
+    </div>
+</section>
+
+<section class="py-10 md:py-16">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <!-- Customer Details Form -->
+            <div class="lg:col-span-3">
+                <div class="glass-card bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-beige-200 shadow-sm">
+                    <h2 class="font-display text-xl font-semibold text-maroon-900 mb-6">Delivery Details</h2>
+                    <form id="checkout-form" class="space-y-4">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block font-body text-xs font-semibold text-gray-600 mb-1.5 tracking-wide uppercase">Full Name *</label>
+                                <input type="text" name="full_name" required id="inp-name"
+                                       class="w-full px-4 py-3 border border-beige-300 rounded-lg font-body text-sm focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60 transition-all">
+                            </div>
+                            <div>
+                                <label class="block font-body text-xs font-semibold text-gray-600 mb-1.5 tracking-wide uppercase">Phone *</label>
+                                <input type="tel" name="phone" required id="inp-phone" pattern="[0-9]{10}"
+                                       class="w-full px-4 py-3 border border-beige-300 rounded-lg font-body text-sm focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60 transition-all">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-body text-xs font-semibold text-gray-600 mb-1.5 tracking-wide uppercase">Email *</label>
+                            <input type="email" name="email" required id="inp-email"
+                                   class="w-full px-4 py-3 border border-beige-300 rounded-lg font-body text-sm focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60 transition-all">
+                        </div>
+                        <div>
+                            <label class="block font-body text-xs font-semibold text-gray-600 mb-1.5 tracking-wide uppercase">Street Address *</label>
+                            <textarea name="address" required id="inp-address" rows="2"
+                                      class="w-full px-4 py-3 border border-beige-300 rounded-lg font-body text-sm focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60 transition-all resize-none"></textarea>
+                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div>
+                                <label class="block font-body text-xs font-semibold text-gray-600 mb-1.5 tracking-wide uppercase">City *</label>
+                                <input type="text" name="city" required id="inp-city"
+                                       class="w-full px-4 py-3 border border-beige-300 rounded-lg font-body text-sm focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60 transition-all">
+                            </div>
+                            <div>
+                                <label class="block font-body text-xs font-semibold text-gray-600 mb-1.5 tracking-wide uppercase">State *</label>
+                                <input type="text" name="state" required id="inp-state" value="{{ user_state|default:'' }}"
+                                       oninput="validateLocationFlow()"
+                                       class="w-full px-4 py-3 border border-beige-300 rounded-lg font-body text-sm focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60 transition-all">
+                            </div>
+                            <div>
+                                <label class="block font-body text-xs font-semibold text-gray-600 mb-1.5 tracking-wide uppercase">Pincode *</label>
+                                <input type="text" name="pincode" required id="inp-pincode" pattern="[0-9]{6}"
+                                       class="w-full px-4 py-3 border border-beige-300 rounded-lg font-body text-sm focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60 transition-all">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Payment Section -->
+                <div class="glass-card bg-white/80 backdrop-blur-sm rounded-xl p-6 md:p-8 border border-beige-200 shadow-sm mt-6">
+                    <h2 class="font-display text-xl font-semibold text-maroon-900 mb-4">Payment via UPI</h2>
+                    
+                    {% if settings and settings.upi_id %}
+                    <div class="bg-gradient-to-br from-maroon-50 to-beige-50 rounded-xl p-6 border border-maroon-100">
+                        <div class="flex flex-col md:flex-row gap-6 items-center">
+                            {% if settings.qr_code %}
+                            <div class="w-48 h-48 bg-white rounded-xl p-3 shadow-md flex-shrink-0">
+                                <img src="{{ settings.qr_code.url }}" alt="UPI QR Code" class="w-full h-full object-contain">
+                            </div>
+                            {% endif %}
+                            <div class="text-center md:text-left">
+                                <p class="font-body text-sm text-gray-600 mb-2">Send payment to:</p>
+                                <div class="bg-white rounded-lg px-4 py-3 shadow-sm border border-beige-200 mb-3">
+                                    <p class="font-body font-bold text-lg text-maroon-800" id="upi-id-display">{{ settings.upi_id }}</p>
+                                </div>
+                                <button onclick="copyUPI()" class="text-maroon-700 font-body text-sm font-semibold hover:underline">📋 Copy UPI ID</button>
+                                <div class="mt-4 space-y-1">
+                                    <p class="font-body text-xs text-gray-500">1. Open any UPI app (GPay, PhonePe, Paytm)</p>
+                                    <p class="font-body text-xs text-gray-500">2. Scan QR or enter UPI ID</p>
+                                    <p class="font-body text-xs text-gray-500">3. Pay the total amount shown</p>
+                                    <p class="font-body text-xs text-gray-500">4. Take a screenshot of payment confirmation</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <p class="font-body text-sm text-yellow-700">⚠️ Payment details not configured. Please contact us to complete your order.</p>
+                    </div>
+                    {% endif %}
+
+                    <!-- Upload Screenshot -->
+                    <div class="mt-6">
+                        <label class="block font-body text-sm font-semibold text-gray-700 mb-3">Upload Payment Screenshot</label>
+                        <div id="upload-area" 
+                             class="border-2 border-dashed border-beige-300 rounded-xl p-8 text-center hover:border-maroon-400 transition-colors cursor-pointer"
+                             onclick="document.getElementById('payment-screenshot').click()">
+                            <svg class="w-10 h-10 text-beige-400 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                            </svg>
+                            <p class="font-body text-sm text-gray-500">Click to upload screenshot</p>
+                            <p class="font-body text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                            <p id="upload-filename" class="font-body text-sm text-maroon-700 font-semibold mt-2 hidden"></p>
+                        </div>
+                        <input type="file" id="payment-screenshot" accept="image/*" class="hidden" onchange="handleFileSelect(this)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary -->
+            <div class="lg:col-span-2">
+                <div class="glass-card bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-beige-200 shadow-md sticky top-24">
+                    <h3 class="font-display text-lg font-semibold text-maroon-900 mb-4">Order Summary</h3>
+                    
+                    <div id="checkout-items" class="space-y-3 max-h-64 overflow-y-auto mb-4"></div>
+
+                    <div class="border-t border-beige-200 pt-4 space-y-2">
+                        <div class="flex justify-between font-body text-sm">
+                            <span class="text-gray-500">Subtotal</span>
+                            <span class="text-gray-900">₹<span id="co-subtotal">0</span></span>
+                        </div>
+                        <div class="flex justify-between font-body text-sm">
+                            <span class="text-gray-500">Shipping</span>
+                            <span class="text-green-600 font-medium">Free</span>
+                        </div>
+                    </div>
+                    <div class="border-t border-beige-200 mt-3 pt-3 flex justify-between">
+                        <span class="font-body font-bold text-gray-900">Total</span>
+                        <span class="font-body font-bold text-xl text-maroon-800">₹<span id="co-total">0</span></span>
+                    </div>
+
+                    <button onclick="placeOrder()" id="place-order-btn"
+                            class="w-full mt-6 py-3.5 bg-gold-500 hover:bg-gold-400 text-maroon-950 font-body font-bold text-sm rounded-lg transition-all duration-300 hover:shadow-lg hover:-translate-y-0.5 flex items-center justify-center gap-2">
+                        <span id="order-btn-text">I Have Paid — Place Order</span>
+                        <div id="order-spinner" class="hidden w-5 h-5 border-2 border-maroon-900 border-t-transparent rounded-full animate-spin"></div>
+                    </button>
+                    <p class="font-body text-xs text-gray-400 text-center mt-3">Your order will be verified by our team</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    renderCheckoutSummary();
+});
+
+function renderCheckoutSummary() {
+    const items = CartManager.getItems();
+    const container = document.getElementById('checkout-items');
+    
+    if (items.length === 0) {
+        window.location.href = "{% url 'orders:cart' %}";
+        return;
+    }
+
+    container.innerHTML = items.map(item => `
+        <div class="flex gap-3 items-center">
+            <div class="w-12 h-14 rounded-lg overflow-hidden bg-beige-50 flex-shrink-0">
+                ${item.image ? `<img src="${item.image}" alt="${item.name}" class="w-full h-full object-cover">` : ''}
+            </div>
+            <div class="flex-1 min-w-0">
+                <p class="font-body text-sm text-gray-900 line-clamp-1">${item.name}</p>
+                ${item.size ? `<p class="text-xs text-gray-400">Size: ${item.size}</p>` : ''}
+                <p class="text-xs text-gray-500">Qty: ${item.quantity}</p>
+            </div>
+            <span class="font-body text-sm font-semibold text-maroon-800">₹${(item.price * item.quantity).toFixed(0)}</span>
+        </div>
+    `).join('');
+
+    const total = CartManager.getTotal();
+    document.getElementById('co-subtotal').textContent = total.toFixed(0);
+    document.getElementById('co-total').textContent = total.toFixed(0);
+
+    validateLocationFlow();
+}
+
+function validateLocationFlow() {
+    const items = CartManager.getItems();
+    const stateInp = document.getElementById('inp-state').value.trim();
+    const isUP = stateInp.toLowerCase() === 'uttar pradesh' || stateInp.toLowerCase() === 'up';
+    
+    const hasMeeshoProduct = items.some(item => item.is_meesho_product);
+    const btn = document.getElementById('place-order-btn');
+    const btnText = document.getElementById('order-btn-text');
+
+    if (isUP && hasMeeshoProduct) {
+        btn.disabled = true;
+        btn.classList.add('opacity-50', 'cursor-not-allowed');
+        btnText.innerHTML = '⚠️ Remove Meesho items for UP delivery';
+        
+        // Show specific error toast if they just typed it
+        if (!window.location_toast_shown) {
+            showToast('Meesho products can only be purchased via Meesho for UP delivery.', 'error');
+            window.location_toast_shown = true;
+        }
+    } else {
+        btn.disabled = false;
+        btn.classList.remove('opacity-50', 'cursor-not-allowed');
+        btnText.innerHTML = 'I Have Paid — Place Order';
+        window.location_toast_shown = false;
+    }
+}
+
+function copyUPI() {
+    const upiId = document.getElementById('upi-id-display')?.textContent;
+    if (upiId) {
+        navigator.clipboard.writeText(upiId).then(() => {
+            showToast('UPI ID copied!', 'success');
+        });
+    }
+}
+
+let selectedFile = null;
+
+function handleFileSelect(input) {
+    if (input.files.length > 0) {
+        selectedFile = input.files[0];
+        document.getElementById('upload-filename').textContent = '✓ ' + selectedFile.name;
+        document.getElementById('upload-filename').classList.remove('hidden');
+        document.getElementById('upload-area').classList.add('border-maroon-500', 'bg-maroon-50/30');
+    }
+}
+
+async function placeOrder() {
+    const form = document.getElementById('checkout-form');
+    if (!form.checkValidity()) {
+        form.reportValidity();
+        return;
+    }
+
+    const items = CartManager.getItems();
+    if (items.length === 0) {
+        showToast('Your cart is empty', 'error');
+        return;
+    }
+
+    const btn = document.getElementById('place-order-btn');
+    const btnText = document.getElementById('order-btn-text');
+    const spinner = document.getElementById('order-spinner');
+    btn.disabled = true;
+    btnText.textContent = 'Processing...';
+    spinner.classList.remove('hidden');
+
+    try {
+        // Get CSRF token
+        const csrfToken = getCookie('csrftoken');
+
+        // Place order
+        const orderData = {
+            full_name: document.getElementById('inp-name').value,
+            email: document.getElementById('inp-email').value,
+            phone: document.getElementById('inp-phone').value,
+            address: document.getElementById('inp-address').value,
+            city: document.getElementById('inp-city').value,
+            state: document.getElementById('inp-state').value,
+            pincode: document.getElementById('inp-pincode').value,
+            total: CartManager.getTotal(),
+            items: items.map(item => ({
+                product_id: item.product_id,
+                name: item.name,
+                size: item.size || '',
+                quantity: item.quantity,
+                price: item.price,
+            }))
+        };
+
+        const response = await fetch("{% url 'orders:place_order' %}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': csrfToken,
+            },
+            body: JSON.stringify(orderData)
+        });
+
+        const result = await response.json();
+        if (!result.success) throw new Error(result.error);
+
+        // Upload payment screenshot if provided
+        if (selectedFile) {
+            const formData = new FormData();
+            formData.append('screenshot', selectedFile);
+            await fetch(`/orders/upload-payment/${result.order_id}/`, {
+                method: 'POST',
+                headers: { 'X-CSRFToken': csrfToken },
+                body: formData
+            });
+        }
+
+        // Clear cart and redirect
+        CartManager.clearCart();
+        window.location.href = `/orders/success/${result.order_id}/`;
+
+    } catch (error) {
+        showToast('Error placing order: ' + error.message, 'error');
+        btn.disabled = false;
+        btnText.textContent = 'I Have Paid — Place Order';
+        spinner.classList.add('hidden');
+    }
+}
+
+function getCookie(name) {
+    let value = null;
+    if (document.cookie) {
+        document.cookie.split(';').forEach(cookie => {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + '=')) {
+                value = decodeURIComponent(cookie.substring(name.length + 1));
+            }
+        });
+    }
+    return value;
+}
+</script>
+{% endblock %}
+{% endblock %}

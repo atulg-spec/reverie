@@ -1,0 +1,331 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - {{ settings.store_name }}{% endblock %}
+{% block meta_description %}{{ product.description|truncatechars:160 }}{% endblock %}
+{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% url 'products:product_detail' product.slug %}{% endblock %}
+
+{% block og_title %}{{ product.name }} | {{ settings.store_name }}{% endblock %}
+{% block og_description %}{{ product.description|truncatechars:160 }}{% endblock %}
+{% block og_image %}{% if product.primary_image %}{{ request.scheme }}://{{ request.get_host }}{{ product.primary_image.image.url }}{% endif %}{% endblock %}
+
+{% block twitter_title %}{{ product.name }}{% endblock %}
+{% block twitter_description %}{{ product.description|truncatechars:160 }}{% endblock %}
+{% block twitter_image %}{% if product.primary_image %}{{ request.scheme }}://{{ request.get_host }}{{ product.primary_image.image.url }}{% endif %}{% endblock %}
+
+{% block content %}
+<!-- Breadcrumb -->
+<div class="bg-beige-50 border-b border-beige-200">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3">
+        <nav class="flex items-center gap-2 text-sm font-body text-gray-500">
+            <a href="{% url 'core:home' %}" class="hover:text-maroon-700 transition-colors">Home</a>
+            <span>/</span>
+            <a href="{% url 'products:shop' %}" class="hover:text-maroon-700 transition-colors">Collection</a>
+            <span>/</span>
+            <a href="{% url 'products:shop' %}?category={{ product.category.slug }}"
+                class="hover:text-maroon-700 transition-colors">{{ product.category.name }}</a>
+            <span>/</span>
+            <span class="text-maroon-800">{{ product.name|truncatewords:4 }}</span>
+        </nav>
+    </div>
+</div>
+
+<section class="py-8 md:py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+
+            <!-- Image Gallery -->
+            <div>
+                <div class="relative aspect-square overflow-hidden rounded-xl bg-beige-50 shadow-md mb-4"
+                    id="main-image-container">
+                    {% if product.primary_image %}
+                    <img id="main-product-image" src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+                        class="w-full h-full object-cover transition-transform duration-500 cursor-zoom-in hover:scale-110"
+                        itemprop="image">
+                    {% else %}
+                    <div class="w-full h-full flex items-center justify-center text-beige-300">
+                        <svg class="w-24 h-24" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                    </div>
+                    {% endif %}
+                    {% if product.discount_percent %}
+                    <span
+                        class="absolute top-4 left-4 bg-maroon-700 text-white text-sm font-body font-semibold px-3 py-1.5 rounded-sm shadow">
+                        -{{ product.discount_percent }}% OFF
+                    </span>
+                    {% endif %}
+                </div>
+                <!-- Thumbnails -->
+                {% if product.images.count > 1 %}
+                <div class="grid grid-cols-4 gap-3">
+                    {% for img in product.images.all %}
+                    <button onclick="changeMainImage('{{ img.image.url }}')"
+                        class="aspect-square rounded-lg overflow-hidden border-2 border-beige-200 hover:border-maroon-500 transition-colors duration-300 focus:outline-none focus:border-maroon-500">
+                        <img src="{{ img.image.url }}" alt="{{ img.alt_text|default:product.name }}"
+                            class="w-full h-full object-cover">
+                    </button>
+                    {% endfor %}
+                </div>
+                {% endif %}
+            </div>
+
+            <!-- Product Details -->
+            <div class="flex flex-col">
+                <span class="text-gold-700 font-body text-xs tracking-[0.2em] uppercase mb-2">
+                    {{ product.category.name }}</span>
+                <h1 class="font-display text-2xl md:text-4xl font-bold text-maroon-900 mb-4">{{ product.name }}</h1>
+
+                <!-- Price -->
+                <div class="flex items-baseline gap-3 mb-6">
+                    <span class="text-3xl font-body font-bold text-maroon-800">₹{{ product.price|floatformat:0 }}</span>
+                    {% if product.original_price %}
+                    <span class="text-lg text-gray-400 font-body line-through">
+                        ₹{{ product.original_price|floatformat:0 }}
+                    </span>
+                    <span class="text-sm bg-green-100 text-green-700 font-body font-semibold px-2 py-0.5 rounded">Save
+                        {{ product.discount_percent }}%</span>
+                    {% endif %}
+                </div>
+
+                <!-- Description -->
+                <div class="prose prose-sm mb-8">
+                    <h2 class="font-body text-sm font-semibold text-gray-700 mb-2 uppercase tracking-tight">Product Details</h2>
+                    <p class="text-gray-600 font-body text-sm leading-relaxed" itemprop="description">{{ product.description }}</p>
+                </div>
+
+                <!-- Size Selection -->
+                {% if product.size_list %}
+                <div class="mb-8">
+                    <h3 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Select Size
+                    </h3>
+                    <div class="flex flex-wrap gap-2" id="size-options">
+                        {% for size in product.size_list %}
+                        <button onclick="selectSize(this, '{{ size }}')"
+                            class="size-btn px-4 py-2.5 border-2 border-beige-300 rounded-lg font-body text-sm font-medium text-gray-700 hover:border-maroon-500 hover:text-maroon-700 transition-all duration-200 focus:outline-none">
+                            {{ size }}
+                        </button>
+                        {% endfor %}
+                    </div>
+                    <p id="size-error" class="text-red-500 text-xs font-body mt-2 hidden">Please select a size</p>
+                </div>
+                {% endif %}
+
+                <!-- Location Badge -->
+                <div class="flex items-center gap-2 mb-4 bg-beige-100/50 p-2 rounded-lg border border-beige-200">
+                    <span class="text-lg">📍</span>
+                    <div class="flex flex-col">
+                        <span class="text-[10px] text-gray-500 font-body uppercase tracking-wider">Shipping to</span>
+                        <span class="text-xs font-body font-semibold text-maroon-900">
+                            {% if user_state %}{{ user_state }}{% if user_city %}, {{ user_city }}{% endif %}{% else %}India (Generic){% endif %}
+                        </span>
+                    </div>
+                    <a href="?set_state=Uttar Pradesh" class="ml-auto text-[10px] text-gold-700 hover:text-maroon-700 font-body font-medium underline">Change</a>
+                </div>
+
+                <!-- Add to Cart / Meesho Redirect -->
+                <div class="flex flex-col gap-4 mb-8">
+                    {% if product.is_meesho_product and user_state == 'Uttar Pradesh' %}
+                    <div class="bg-pink-50 border border-pink-100 p-3 rounded-lg mb-2">
+                        <p class="text-xs text-pink-700 font-body font-medium flex items-center gap-2">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M11 3a1 1 0 10-2 0v1a1 1 0 102 0V3zM5.884 6.68a1 1 0 10-1.404-1.427l-.707.696a1 1 0 101.404 1.427l.707-.696zM14.116 6.68l.707-.696a1 1 0 10-1.404-1.427l-.707.696a1 1 0 101.404 1.427zM5 11a1 1 0 01-1-1V9a1 1 0 012 0v1a1 1 0 01-1 1zM15 11a1 1 0 01-1-1V9a1 1 0 012 0v1a1 1 0 01-1 1zM3.707 14.293a1 1 0 001.414 1.414l.696-.707a1 1 0 00-1.414-1.414l-.696.707zM16.293 14.293l-.696-.707a1 1 0 00-1.414 1.414l.696.707a1 1 0 001.414-1.414zM10 17a1 1 0 100-2 1 1 0 000 2z"/></svg>
+                            Available via Meesho for faster delivery in UP
+                        </p>
+                    </div>
+                    <a href="{{ product.meesho_url }}" target="_blank" rel="noopener noreferrer"
+                        class="w-full bg-[#f43397] hover:bg-[#e62e8a] text-white font-body font-semibold text-sm py-4 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2 transform hover:-translate-y-1">
+                        Buy Now
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                    </a>
+                    <p class="text-xs text-gray-400 font-body text-center italic">Get Extra 30% off on prepaid orders via Meesho</p>
+                    {% else %}
+                    <div class="flex gap-3">
+                        <div class="flex items-center border-2 border-beige-300 rounded-lg overflow-hidden bg-white">
+                            <button onclick="updateDetailQty(-1)"
+                                class="px-3 py-2.5 text-gray-600 hover:bg-beige-100 transition-colors font-body font-bold">−</button>
+                            <input type="number" id="detail-qty" value="1" min="1" max="10"
+                                class="w-12 text-center font-body text-sm font-semibold border-x-2 border-beige-300 py-2.5 outline-none bg-transparent">
+                            <button onclick="updateDetailQty(1)"
+                                class="px-3 py-2.5 text-gray-600 hover:bg-beige-100 transition-colors font-body font-bold">+</button>
+                        </div>
+                        <button onclick="addToCartFromDetail()" id="add-to-cart-btn"
+                            class="flex-1 bg-maroon-800 hover:bg-maroon-700 text-white font-body font-semibold text-sm py-3.5 rounded-lg shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-1 flex items-center justify-center gap-2">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                    d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                            </svg>
+                            Add to Cart
+                        </button>
+                    </div>
+                    {% if product.is_meesho_product %}
+                    <p class="text-[10px] text-gray-400 font-body text-center mt-2">✨ Direct Purchase Available for your region</p>
+                    {% endif %}
+                    {% endif %}
+                </div>
+
+                <!-- Trust Badges -->
+                <div class="grid grid-cols-3 gap-3 pt-6 border-t border-beige-200">
+                    <div class="text-center">
+                        <span class="text-xl mb-1 block">🪡</span>
+                        <span class="text-xs text-gray-500 font-body">Handcrafted</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-xl mb-1 block">📦</span>
+                        <span class="text-xs text-gray-500 font-body">Safe Packaging</span>
+                    </div>
+                    <div class="text-center">
+                        <span class="text-xl mb-1 block">🔄</span>
+                        <span class="text-xs text-gray-500 font-body">Easy Returns</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Related Products -->
+{% if related_products %}
+<section class="py-12 md:py-20 bg-beige-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-10">
+            <span class="text-gold-600 font-body text-xs tracking-[0.3em] uppercase">You May Also Like</span>
+            <h2 class="font-display text-2xl md:text-4xl font-bold text-maroon-900 mt-2">Recommended for You</h2>
+            <div class="w-16 h-0.5 bg-gold-500 mx-auto mt-3"></div>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+            {% for product in related_products %}
+            <a href="{% url 'products:product_detail' product.slug %}" class="group">
+                <div
+                    class="bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-beige-100">
+                    <div class="relative aspect-[3/4] overflow-hidden bg-beige-50">
+                        {% if product.primary_image %}
+                        <img src="{{ product.primary_image.image.url }}" alt="{{ product.name }}"
+                            class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                            loading="lazy">
+                        {% else %}
+                        <div class="w-full h-full flex items-center justify-center text-beige-300">
+                            <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1"
+                                    d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="p-3">
+                        <h3
+                            class="font-display text-sm font-semibold text-gray-900 line-clamp-2 group-hover:text-maroon-700 transition-colors">
+                            {{ product.name }}</h3>
+                        <span class="text-maroon-800 font-body font-bold text-sm mt-1 block">
+                            ₹{{ product.price|floatformat:0 }}
+                        </span>
+                    </div>
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endif %}
+{% endblock %}
+
+<!-- Structured Data (JSON-LD) -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org/",
+  "@type": "Product",
+  "name": "{{ product.name|escapejs }}",
+  "image": [
+    {% if product.primary_image %}"{{ request.scheme }}://{{ request.get_host }}{{ product.primary_image.image.url }}"{% endif %}
+  ],
+  "description": "{{ product.description|truncatechars:160|escapejs }}",
+  "sku": "{{ product.id }}",
+  "brand": {
+    "@type": "Brand",
+    "name": "{{ settings.store_name|escapejs }}"
+  },
+  "offers": {
+    "@type": "Offer",
+    "url": "{{ request.scheme }}://{{ request.get_host }}{{ request.path }}",
+    "priceCurrency": "INR",
+    "price": "{{ product.price }}",
+    "availability": "{% if product.in_stock %}https://schema.org/InStock{% else %}https://schema.org/OutOfStock{% endif %}"
+  }
+}
+</script>
+
+{% block extra_js %}
+<script>
+    const PRODUCT_DATA = {
+        id: {{ product.id }},
+        name: "{{ product.name|escapejs }}",
+        price: {{ product.price }},
+        image: "{% if product.primary_image %}{{ product.primary_image.image.url }}{% endif %}",
+        slug: "{{ product.slug }}",
+        hasSizes: {{ product.size_list|yesno:"true,false" }},
+        is_meesho_product: {{ product.is_meesho_product|yesno:"true,false" }},
+        meesho_url: "{{ product.meesho_url|escapejs }}"
+    };
+
+    let selectedSize = '';
+
+    function changeMainImage(url) {
+        const img = document.getElementById('main-product-image');
+        if (img) {
+            img.style.opacity = '0';
+            setTimeout(() => {
+                img.src = url;
+                img.style.opacity = '1';
+            }, 200);
+        }
+    }
+
+    function selectSize(btn, size) {
+        document.querySelectorAll('.size-btn').forEach(b => {
+            b.classList.remove('border-maroon-700', 'bg-maroon-50', 'text-maroon-700');
+            b.classList.add('border-beige-300', 'text-gray-700');
+        });
+        btn.classList.remove('border-beige-300', 'text-gray-700');
+        btn.classList.add('border-maroon-700', 'bg-maroon-50', 'text-maroon-700');
+        selectedSize = size;
+        document.getElementById('size-error').classList.add('hidden');
+    }
+
+    function updateDetailQty(delta) {
+        const input = document.getElementById('detail-qty');
+        let val = parseInt(input.value) + delta;
+        if (val < 1) val = 1;
+        if (val > 10) val = 10;
+        input.value = val;
+    }
+
+    function addToCartFromDetail() {
+        if (PRODUCT_DATA.hasSizes && !selectedSize) {
+            document.getElementById('size-error').classList.remove('hidden');
+            return;
+        }
+        const qty = parseInt(document.getElementById('detail-qty').value);
+        const cartItem = {
+            product_id: PRODUCT_DATA.id,
+            name: PRODUCT_DATA.name,
+            price: PRODUCT_DATA.price,
+            image: PRODUCT_DATA.image,
+            slug: PRODUCT_DATA.slug,
+            size: selectedSize,
+            quantity: qty,
+            is_meesho_product: PRODUCT_DATA.is_meesho_product,
+            meesho_url: PRODUCT_DATA.meesho_url
+        };
+        CartManager.addItem(cartItem);
+        showToast(`${PRODUCT_DATA.name} added to cart!`, 'success');
+
+        // Redirect to Cart Page after 500ms
+        setTimeout(() => {
+            window.location.href = "{% url 'orders:cart' %}";
+        }, 500);
+    }
+</script>
+{% endblock %}

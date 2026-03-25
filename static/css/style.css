@@ -1,0 +1,132 @@
+/* ================================
+   Rangrez - Custom Styles
+   ================================ */
+
+/* Smooth Scroll */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Glass Card Effect */
+.glass-card {
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Product Card Hover */
+.product-card {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+}
+.product-card:hover {
+    transform: translateY(-4px);
+}
+
+/* Line Clamp */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Cart Item Animate */
+.cart-item-animate {
+    animation: fadeSlideUp 0.4s ease-out forwards;
+    opacity: 0;
+}
+
+@keyframes fadeSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(12px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Toast Animations */
+.toast-enter {
+    animation: toastSlideIn 0.35s ease-out forwards;
+}
+.toast-exit {
+    animation: toastSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes toastSlideOut {
+    from {
+        opacity: 1;
+        transform: translateX(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateX(40px);
+    }
+}
+
+/* Skeleton Loader */
+.skeleton {
+    background: linear-gradient(90deg, #f3ebd5 25%, #faf6ed 50%, #f3ebd5 75%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* Nav Scroll Effect */
+.nav-scrolled {
+    box-shadow: 0 2px 20px rgba(122, 26, 58, 0.08);
+}
+
+/* Image zoom on product detail */
+#main-product-image {
+    transition: transform 0.4s ease, opacity 0.2s ease;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+::-webkit-scrollbar-track {
+    background: #faf6ed;
+}
+::-webkit-scrollbar-thumb {
+    background: #d4bc8a;
+    border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #c4a265;
+}
+
+/* Mobile menu transitions */
+#mobile-menu {
+    transition: max-height 0.3s ease, opacity 0.3s ease;
+}
+
+/* Focus styles for accessibility */
+input:focus, select:focus, textarea:focus, button:focus-visible {
+    outline: 2px solid #ab1e49;
+    outline-offset: 2px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 640px) {
+    .font-display {
+        letter-spacing: -0.01em;
+    }
+}

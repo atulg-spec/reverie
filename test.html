@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, user-scalable=yes">
+    <title>FleetFlow | Delivery & Fleet MVP</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1e293b;
+            padding-bottom: 80px;
+        }
+
+        /* sticky header */
+        .app-header {
+            position: sticky;
+            top: 0;
+            background: white;
+            padding: 1rem 1.25rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.03);
+            border-bottom: 1px solid #e9eef3;
+            z-index: 10;
+            backdrop-filter: blur(2px);
+            background: rgba(255,255,255,0.96);
+        }
+
+        .app-header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: -0.3px;
+            background: linear-gradient(135deg, #1e3c72, #2b4c7c);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        /* main container */
+        .container {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 1rem 1rem 1.5rem;
+        }
+
+        /* cards */
+        .card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.25rem;
+            margin-bottom: 1.25rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02), 0 1px 2px rgba(0,0,0,0.05);
+            border: 1px solid #eef2f6;
+        }
+
+        .card-title {
+            font-weight: 600;
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #2b6e9e;
+            padding-left: 0.75rem;
+            color: #0f2b3d;
+        }
+
+        /* dashboard stats grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 1rem;
+        }
+
+        .stat-card {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 1rem;
+            text-align: center;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-number {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #1e4a76;
+            line-height: 1.2;
+        }
+
+        .stat-label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #4a627a;
+        }
+
+        /* form elements */
+        input, select, textarea, button {
+            font-family: inherit;
+            font-size: 1rem;
+            border-radius: 14px;
+            padding: 0.8rem 1rem;
+            width: 100%;
+            border: 1px solid #cfdee9;
+            background: white;
+            transition: 0.2s;
+            margin-top: 4px;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #2b6e9e;
+            box-shadow: 0 0 0 3px rgba(43,110,158,0.2);
+        }
+
+        button {
+            background: #1f5e8e;
+            color: white;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 12px;
+        }
+
+        button:active { transform: scale(0.97); background: #134b70; }
+        .btn-secondary {
+            background: #eef2f8;
+            color: #1f3b4c;
+            border: 1px solid #cbdde9;
+        }
+        .btn-danger {
+            background: #b91c1c;
+        }
+        .btn-sm {
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            width: auto;
+            display: inline-block;
+        }
+        .flex-btns {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        /* bottom nav */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(12px);
+            display: flex;
+            justify-content: space-around;
+            padding: 0.6rem 0.8rem 1rem;
+            border-top: 1px solid #e2edf2;
+            z-index: 20;
+        }
+
+        .nav-item {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #6f8eaa;
+            padding: 0.4rem 0;
+            margin: 0;
+            width: auto;
+            flex: 1;
+        }
+
+        .nav-item.active {
+            color: #1f5e8e;
+            font-weight: 600;
+            background: transparent;
+            transform: none;
+        }
+
+        .nav-icon {
+            font-size: 1.5rem;
+            margin-bottom: 3px;
+        }
+
+        /* lists */
+        .list-item {
+            padding: 0.75rem 0;
+            border-bottom: 1px solid #eef2f6;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .badge {
+            background: #eef2ff;
+            padding: 0.2rem 0.6rem;
+            border-radius: 40px;
+            font-size: 0.75rem;
+        }
+
+        .search-input {
+            margin-bottom: 1rem;
+        }
+
+        .hidden-section {
+            display: none;
+        }
+
+        .alert {
+            background: #fef9e3;
+            border-left: 4px solid #e6b800;
+            padding: 0.7rem;
+            border-radius: 14px;
+            font-size: 0.85rem;
+            margin: 0.5rem 0;
+        }
+    </style>
+</head>
+<body>
+<div class="app-header">
+    <h1>⚡ FLEETFLOW MVP</h1>
+</div>
+
+<div id="appRoot" class="container">
+    <!-- DYNAMIC SECTIONS RENDERED HERE -->
+</div>
+
+<div class="bottom-nav" id="bottomNav">
+    <button class="nav-item" data-section="dashboard">📊<span>Dashboard</span></button>
+    <button class="nav-item" data-section="delivery">🚚<span>New Trip</span></button>
+    <button class="nav-item" data-section="clients">👥<span>Clients</span></button>
+    <button class="nav-item" data-section="plates">🚛<span>Plates</span></button>
+    <button class="nav-item" data-section="payments">💰<span>Payments</span></button>
+    <button class="nav-item" data-section="salary">💵<span>Salary</span></button>
+    <button class="nav-item" data-section="reports">📑<span>Reports</span></button>
+</div>
+
+<script>
+    // ---------- STATE MANAGEMENT (MODULAR) ----------
+    const STORAGE_KEYS = {
+        deliveries: "fleet_deliveries",
+        plates: "fleet_plates",
+        clients: "fleet_clients",
+        payments: "fleet_payments"
+    };
+
+    let AppState = {
+        currentSection: "dashboard",
+        pinCode: "1234"
+    };
+
+    // helpers: load & save
+    function loadData() {
+        return {
+            deliveries: JSON.parse(localStorage.getItem(STORAGE_KEYS.deliveries) || "[]"),
+            plates: JSON.parse(localStorage.getItem(STORAGE_KEYS.plates) || "[]"),
+            clients: JSON.parse(localStorage.getItem(STORAGE_KEYS.clients) || "[]"),
+            payments: JSON.parse(localStorage.getItem(STORAGE_KEYS.payments) || "[]")
+        };
+    }
+
+    function saveData(key, data) {
+        localStorage.setItem(key, JSON.stringify(data));
+    }
+
+    // helpers: update counters for plates (trip/receipt counters based on deliveries)
+    function refreshPlateCounters() {
+        const { deliveries, plates } = loadData();
+        const updatedPlates = plates.map(plate => {
+            const plateTrips = deliveries.filter(d => d.plateNo === plate.plateNo);
+            const lastTrip = plateTrips.sort((a,b)=> new Date(b.dateTime) - new Date(a.dateTime))[0];
+            let tripCounter = plateTrips.length;
+            let receiptCounter = tripCounter;
+            return { ...plate, tripCounter, receiptCounter };
+        });
+        saveData(STORAGE_KEYS.plates, updatedPlates);
+    }
+
+    // update client balances from payments & deliveries (amount total - paid)
+    function refreshClientBalances() {
+        let { clients, deliveries, payments } = loadData();
+        const updated = clients.map(client => {
+            const clientDeliveries = deliveries.filter(d => d.clientName === client.name);
+            const totalAmount = clientDeliveries.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+            const clientPayments = payments.filter(p => p.clientName === client.name);
+            const paid = clientPayments.reduce((sum, p) => sum + (Number(p.amount) || 0), 0);
+            const balance = totalAmount - paid;
+            return { ...client, totalAmount, paid, balance };
+        });
+        saveData(STORAGE_KEYS.clients, updated);
+    }
+
+    // salary calculation: trips per driver & staff, rate hardcoded 50 per trip
+    function computeSalaryStats() {
+        const { deliveries } = loadData();
+        const driverMap = new Map();
+        const staffMap = new Map();
+        deliveries.forEach(d => {
+            if (d.driver) driverMap.set(d.driver, (driverMap.get(d.driver) || 0) + 1);
+            if (d.staff) staffMap.set(d.staff, (staffMap.get(d.staff) || 0) + 1);
+        });
+        const rate = 50;
+        const driverSalary = Array.from(driverMap.entries()).map(([name, trips]) => ({ name, role: "Driver", trips, salary: trips * rate }));
+        const staffSalary = Array.from(staffMap.entries()).map(([name, trips]) => ({ name, role: "Staff", trips, salary: trips * rate }));
+        const all = [...driverSalary, ...staffSalary];
+        const totalSalary = all.reduce((s, e) => s + e.salary, 0);
+        return { entries: all, totalSalary, paid: 0, balance: totalSalary };
+    }
+
+    // dashboard aggregator
+    function getDashboardStats() {
+        const { deliveries, plates, clients } = loadData();
+        const totalTrips = deliveries.length;
+        const totalRevenue = deliveries.reduce((sum, d) => sum + (Number(d.amount) || 0), 0);
+        const outstandingBalance = clients.reduce((sum, c) => sum + (c.balance || 0), 0);
+        const activePlates = plates.filter(p => p.status === "Active").length;
+        return { totalTrips, totalRevenue, outstandingBalance, activePlates };
+    }
+
+    // delivery duplicate check (date+time+plate)
+    function isDuplicateDelivery(date, time, plateNo) {
+        const { deliveries } = loadData();
+        return deliveries.some(d => d.date === date && d.time === time && d.plateNo === plateNo);
+    }
+
+    // save delivery
+    function saveDelivery(formData) {
+        let { date, time, clientName, plateNo, liters, amount, driver, staff, note } = formData;
+        if (!date || !time || !clientName || !plateNo || !driver || !staff) return { success: false, msg: "All required fields (Date,Time,Client,Plate,Driver,Staff)" };
+        if (isDuplicateDelivery(date, time, plateNo)) return { success: false, msg: "Duplicate: same Date+Time+Plate already exists!" };
+        
+        let { plates, deliveries } = loadData();
+        const plateEntry = plates.find(p => p.plateNo === plateNo);
+        if (!plateEntry) return { success: false, msg: "Plate not found" };
+        
+        // auto increment counters per plate for tripNo & receiptNo
+        const plateTrips = deliveries.filter(d => d.plateNo === plateNo);
+        const tripNumber = plateTrips.length + 1;
+        const receiptNumber = tripNumber;
+        
+        const newDelivery = {
+            id: Date.now() + Math.random(),
+            date, time, clientName: clientName.toUpperCase(), plateNo: plateNo.toUpperCase(),
+            liters: Number(liters), amount: Number(amount), driver: driver.toUpperCase(), staff: staff.toUpperCase(),
+            note: note?.toUpperCase() || "",
+            tripNumber, receiptNumber, createdAt: new Date().toISOString()
+        };
+        deliveries.push(newDelivery);
+        saveData(STORAGE_KEYS.deliveries, deliveries);
+        refreshPlateCounters();
+        refreshClientBalances();
+        return { success: true, msg: "Delivery saved ✔️" };
+    }
+
+    // add client with PIN guard
+    function addClient(name, pin) {
+        if (pin !== AppState.pinCode) return { success: false, msg: "Invalid PIN" };
+        if (!name.trim()) return { success: false, msg: "Client name required" };
+        let { clients } = loadData();
+        const upperName = name.trim().toUpperCase();
+        if (clients.some(c => c.name === upperName)) return { success: false, msg: "Duplicate client name" };
+        const newClient = { name: upperName, totalAmount: 0, paid: 0, balance: 0 };
+        clients.push(newClient);
+        saveData(STORAGE_KEYS.clients, clients);
+        return { success: true, msg: "Client added" };
+    }
+
+    // add plate with PIN guard
+    function addPlate(plateNo, defaultLiters, defaultAmount, status, pin) {
+        if (pin !== AppState.pinCode) return { success: false, msg: "Invalid PIN" };
+        let { plates } = loadData();
+        const upperPlate = plateNo.trim().toUpperCase();
+        if (plates.some(p => p.plateNo === upperPlate)) return { success: false, msg: "Plate exists" };
+        const newPlate = {
+            plateNo: upperPlate, defaultLiters: Number(defaultLiters) || 0, defaultAmount: Number(defaultAmount) || 0,
+            tripCounter: 0, receiptCounter: 0, status: status === "Active" ? "Active" : "Inactive"
+        };
+        plates.push(newPlate);
+        saveData(STORAGE_KEYS.plates, plates);
+        return { success: true, msg: "Plate added" };
+    }
+
+    // add payment
+    function addPayment(clientName, amount) {
+        if (!clientName || !amount || amount <= 0) return { success: false, msg: "Valid client & amount required" };
+        let { payments, clients: allClients } = loadData();
+        const upperClient = clientName.toUpperCase();
+        if (!allClients.some(c => c.name === upperClient)) return { success: false, msg: "Client not found" };
+        const paymentRecord = { id: Date.now(), clientName: upperClient, amount: Number(amount), date: new Date().toISOString().slice(0,10) };
+        payments.push(paymentRecord);
+        saveData(STORAGE_KEYS.payments, payments);
+        refreshClientBalances();
+        return { success: true, msg: "Payment recorded" };
+    }
+
+    // Clear ALL data with PIN
+    function clearAllData(pin) {
+        if (pin !== AppState.pinCode) return false;
+        localStorage.removeItem(STORAGE_KEYS.deliveries);
+        localStorage.removeItem(STORAGE_KEYS.plates);
+        localStorage.removeItem(STORAGE_KEYS.clients);
+        localStorage.removeItem(STORAGE_KEYS.payments);
+        // seed minimal demo data for usability
+        seedDemoData();
+        return true;
+    }
+
+    function seedDemoData() {
+        if (localStorage.getItem(STORAGE_KEYS.plates)) return;
+        const demoPlates = [{ plateNo: "KA01AB1234", defaultLiters: 50, defaultAmount: 4500, tripCounter:0, receiptCounter:0, status:"Active" }];
+        const demoClients = [{ name: "ABC LOGISTICS", totalAmount:0, paid:0, balance:0 }];
+        saveData(STORAGE_KEYS.plates, demoPlates);
+        saveData(STORAGE_KEYS.clients, demoClients);
+        saveData(STORAGE_KEYS.deliveries, []);
+        saveData(STORAGE_KEYS.payments, []);
+        refreshClientBalances();
+    }
+
+    // ---------- UI RENDER FUNCTIONS (modular) ----------
+    function render() {
+        const root = document.getElementById("appRoot");
+        if (!root) return;
+        const section = AppState.currentSection;
+        if (section === "dashboard") root.innerHTML = renderDashboard();
+        else if (section === "delivery") root.innerHTML = renderDeliveryForm();
+        else if (section === "clients") root.innerHTML = renderClients();
+        else if (section === "plates") root.innerHTML = renderPlates();
+        else if (section === "payments") root.innerHTML = renderPayments();
+        else if (section === "salary") root.innerHTML = renderSalary();
+        else if (section === "reports") root.innerHTML = renderReports();
+        attachSectionEvents();
+    }
+
+    function renderDashboard() {
+        const stats = getDashboardStats();
+        return `
+            <div class="card">
+                <div class="card-title">📈 Live Dashboard</div>
+                <div class="stats-grid">
+                    <div class="stat-card"><div class="stat-number">${stats.totalTrips}</div><div class="stat-label">Total Trips</div></div>
+                    <div class="stat-card"><div class="stat-number">₹${stats.totalRevenue.toLocaleString()}</div><div class="stat-label">Revenue</div></div>
+                    <div class="stat-card"><div class="stat-number">₹${stats.outstandingBalance.toLocaleString()}</div><div class="stat-label">Outstanding</div></div>
+                    <div class="stat-card"><div class="stat-number">${stats.activePlates}</div><div class="stat-label">Active Plates</div></div>
+                </div>
+            </div>
+            <div class="card"><div class="card-title">⚙️ Admin Tools</div><button id="clearAllBtn" class="btn-danger" style="background:#a11;">🧹 Clear All Data (PIN req)</button><div class="alert">PIN: 1234 required for critical actions</div></div>
+        `;
+    }
+
+    function renderDeliveryForm() {
+        const { plates, clients } = loadData();
+        const now = new Date();
+        const today = now.toISOString().slice(0,10);
+        const currentTime = now.toTimeString().slice(0,5);
+        const clientOptions = clients.map(c => `<option value="${c.name}">${c.name}</option>`).join("");
+        const plateOptions = plates.map(p => `<option value="${p.plateNo}" data-liters="${p.defaultLiters}" data-amount="${p.defaultAmount}">${p.plateNo}</option>`).join("");
+        const drivers = ["RAJESH", "SURESH", "MAHESH"];
+        const staffList = ["AMIT", "VIJAY", "PRAKASH"];
+        return `
+            <div class="card"><div class="card-title">📦 New Delivery Entry</div>
+            <form id="deliveryForm">
+                <label>Date</label><input type="date" id="delDate" value="${today}" required>
+                <label>Time</label><input type="time" id="delTime" value="${currentTime}" required>
+                <label>Client Name</label><select id="clientName" required>${clientOptions || '<option>--Add client first--</option>'}</select>
+                <label>Plate No</label><select id="plateNo" required>${plateOptions}</select>
+                <label>Liters</label><input type="number" id="liters" step="any" required>
+                <label>Amount (₹)</label><input type="number" id="amount" step="any" required>
+                <label>Driver</label><select id="driver">${drivers.map(d=>`<option>${d}</option>`).join("")}</select>
+                <label>Staff</label><select id="staff">${staffList.map(s=>`<option>${s}</option>`).join("")}</select>
+                <label>Note</label><input type="text" id="note" placeholder="optional">
+                <button type="submit">✅ SAVE / DELIVERED</button>
+            </form></div>
+        `;
+    }
+
+    function renderClients() {
+        const { clients } = loadData();
+        const clientList = clients.map(c => `<div class="list-item"><span><b>${c.name}</b></span><span>Total: ₹${c.totalAmount} | Paid: ₹${c.paid} | Balance: ₹${c.balance}</span></div>`).join("");
+        return `<div class="card"><div class="card-title">👥 Clients & Balances</div>
+        <input type="text" id="newClientName" placeholder="New client name (CAPS)" class="search-input">
+        <div class="flex-btns"><button id="addClientBtn" class="btn-secondary">➕ Add Client (PIN)</button></div>
+        <div class="card-title" style="margin-top:1rem;">Client Register</div>${clientList || "<div>No clients</div>"}</div>`;
+    }
+
+    function renderPlates() {
+        const { plates } = loadData();
+        const plateRows = plates.map(p => `<div class="list-item"><div><b>${p.plateNo}</b><div class="badge">${p.status}</div></div><div>Def Liters:${p.defaultLiters} | Amount:₹${p.defaultAmount}<br>Trips:${p.tripCounter}</div></div>`).join("");
+        return `<div class="card"><div class="card-title">🚛 Plate Management</div>
+        <input type="text" id="plateNoInput" placeholder="Plate Number (e.g KA01AB9999)">
+        <input type="number" id="defLiters" placeholder="Default Liters">
+        <input type="number" id="defAmount" placeholder="Default Amount">
+        <select id="plateStatus"><option>Active</option><option>Inactive</option></select>
+        <button id="addPlateBtn" class="btn-secondary">➕ Add Plate (PIN)</button>
+        <div class="card-title" style="margin-top:1rem;">Active Plates List</div>${plateRows}</div>`;
+    }
+
+    function renderPayments() {
+        const { clients } = loadData();
+        const clientOptions = clients.map(c => `<option value="${c.name}">${c.name} (Balance: ₹${c.balance})</option>`).join("");
+        return `<div class="card"><div class="card-title">💰 Record Payment</div>
+        <select id="paymentClient">${clientOptions}</select>
+        <input type="number" id="paymentAmount" placeholder="Amount (₹)">
+        <button id="recordPaymentBtn">💵 Save Payment</button>
+        <div class="card-title" style="margin-top:1rem;">Payment History (recent)</div>
+        <div id="paymentHistoryPreview">Select client to view</div>
+        </div>`;
+    }
+
+    function renderSalary() {
+        const salaryData = computeSalaryStats();
+        const rows = salaryData.entries.map(e => `<div class="list-item"><span>${e.name} (${e.role})</span><span>Trips: ${e.trips} | Salary: ₹${e.salary}</span></div>`).join("");
+        return `<div class="card"><div class="card-title">💵 Driver & Staff Salary</div><div class="stat-card">💰 Total Salary: ₹${salaryData.totalSalary}<br>⚖️ Balance: ₹${salaryData.balance}</div>${rows}</div>`;
+    }
+
+    function renderReports() {
+        const { plates, deliveries, clients } = loadData();
+        const plateOptions = `<option value="">--All Plates--</option>${plates.map(p=>`<option>${p.plateNo}</option>`)}`;
+        const clientOptions = `<option value="">--All Clients--</option>${clients.map(c=>`<option>${c.name}</option>`)}`;
+        return `<div class="card"><div class="card-title">📊 Filter Reports</div>
+        <label>Plate</label><select id="reportPlate">${plateOptions}</select>
+        <label>Client</label><select id="reportClient">${clientOptions}</select>
+        <label>Date From</label><input type="date" id="dateFrom">
+        <label>Date To</label><input type="date" id="dateTo">
+        <button id="applyReportBtn">Apply Filter</button>
+        <div id="reportResults"></div>
+        </div>`;
+    }
+
+    function attachSectionEvents() {
+        // Delivery form handler
+        const form = document.getElementById("deliveryForm");
+        if (form) {
+            const plateSelect = document.getElementById("plateNo");
+            const litersInput = document.getElementById("liters");
+            const amountInput = document.getElementById("amount");
+            const updatePlateDefaults = () => {
+                const selected = plateSelect.options[plateSelect.selectedIndex];
+                if(selected && selected.dataset) {
+                    litersInput.value = selected.dataset.liters || "";
+                    amountInput.value = selected.dataset.amount || "";
+                }
+            };
+            plateSelect?.addEventListener("change", updatePlateDefaults);
+            updatePlateDefaults();
+            form.addEventListener("submit", (e) => {
+                e.preventDefault();
+                const date = document.getElementById("delDate").value;
+                const time = document.getElementById("delTime").value;
+                const clientName = document.getElementById("clientName").value;
+                const plateNo = document.getElementById("plateNo").value;
+                const liters = document.getElementById("liters").value;
+                const amount = document.getElementById("amount").value;
+                const driver = document.getElementById("driver").value;
+                const staff = document.getElementById("staff").value;
+                const note = document.getElementById("note").value;
+                const result = saveDelivery({ date, time, clientName, plateNo, liters, amount, driver, staff, note });
+                alert(result.msg);
+                if(result.success) render();
+            });
+        }
+
+        document.getElementById("addClientBtn")?.addEventListener("click", () => {
+            const name = document.getElementById("newClientName")?.value;
+            const pin = prompt("Enter PIN (1234)");
+            const res = addClient(name, pin);
+            alert(res.msg);
+            if(res.success) render();
+        });
+
+        document.getElementById("addPlateBtn")?.addEventListener("click", () => {
+            const plateNo = document.getElementById("plateNoInput")?.value;
+            const liters = document.getElementById("defLiters")?.value;
+            const amount = document.getElementById("defAmount")?.value;
+            const status = document.getElementById("plateStatus")?.value;
+            const pin = prompt("PIN required:");
+            const res = addPlate(plateNo, liters, amount, status, pin);
+            alert(res.msg);
+            if(res.success) render();
+        });
+
+        document.getElementById("recordPaymentBtn")?.addEventListener("click", () => {
+            const client = document.getElementById("paymentClient")?.value;
+            const amt = document.getElementById("paymentAmount")?.value;
+            const res = addPayment(client, amt);
+            alert(res.msg);
+            if(res.success) render();
+        });
+
+        document.getElementById("clearAllBtn")?.addEventListener("click", () => {
+            const pin = prompt("Enter MASTER PIN to clear ALL data:");
+            if(clearAllData(pin)) { alert("All data reset + demo seeded"); render(); }
+            else alert("Wrong PIN or failed");
+        });
+
+        const applyBtn = document.getElementById("applyReportBtn");
+        if(applyBtn) {
+            applyBtn.addEventListener("click", () => {
+                const plate = document.getElementById("reportPlate").value;
+                const client = document.getElementById("reportClient").value;
+                const from = document.getElementById("dateFrom").value;
+                const to = document.getElementById("dateTo").value;
+                let { deliveries } = loadData();
+                let filtered = deliveries.filter(d => {
+                    if(plate && d.plateNo !== plate) return false;
+                    if(client && d.clientName !== client) return false;
+                    if(from && d.date < from) return false;
+                    if(to && d.date > to) return false;
+                    return true;
+                });
+                const total = filtered.reduce((s,d)=> s+d.amount,0);
+                const grouped = filtered.reduce((acc,d)=> { acc[d.plateNo] = (acc[d.plateNo]||0)+d.amount; return acc; }, {});
+                let html = `<div class="card">Filtered Trips: ${filtered.length} | Total: ₹${total}<br>`;
+                html += Object.entries(grouped).map(([p, amt]) => `<div>${p}: ₹${amt}</div>`).join("");
+                html += `</div>`;
+                document.getElementById("reportResults").innerHTML = html;
+            });
+        }
+        
+        // payment history preview dynamic
+        const clientSelect = document.getElementById("paymentClient");
+        if(clientSelect){
+            const updateHistory = () => {
+                const client = clientSelect.value;
+                const { payments } = loadData();
+                const filtered = payments.filter(p=>p.clientName === client).slice(-5);
+                const historyDiv = document.getElementById("paymentHistoryPreview");
+                if(historyDiv) historyDiv.innerHTML = filtered.map(p=>`<div>📅 ${p.date} - ₹${p.amount}</div>`).join("") || "No payments";
+            };
+            clientSelect.addEventListener("change", updateHistory);
+            updateHistory();
+        }
+    }
+
+    // navigation
+    function initNav() {
+        const btns = document.querySelectorAll(".nav-item");
+        btns.forEach(btn => {
+            btn.addEventListener("click", () => {
+                const section = btn.getAttribute("data-section");
+                if(section) {
+                    AppState.currentSection = section;
+                    render();
+                    btns.forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                }
+            });
+        });
+        document.querySelector(`.nav-item[data-section="${AppState.currentSection}"]`)?.classList.add("active");
+    }
+
+    function init() {
+        seedDemoData();
+        render();
+        initNav();
+    }
+    init();
+</script>
+</body>
+</html>
