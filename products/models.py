@@ -40,6 +40,8 @@ class Product(models.Model):
                              help_text='Comma-separated sizes, e.g. 5,6,7,8 or 1-2Y,2-3Y,3-4Y')
     featured = models.BooleanField(default=False)
     in_stock = models.BooleanField(default=True)
+    stock_count = models.PositiveIntegerField(default=10, help_text='Actual stock available')
+    tags = models.CharField(max_length=200, blank=True, help_text='Comma-separated tags, e.g. Best Seller, New Arrival')
     is_meesho_product = models.BooleanField(default=False, help_text='If true, product redirected to Meesho')
     meesho_url = models.URLField(blank=True, null=True, help_text='Meesho product link')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -64,9 +66,22 @@ class Product(models.Model):
         return img
 
     @property
+    def secondary_image(self):
+        imgs = self.images.all()
+        if imgs.count() > 1:
+            return imgs[1]
+        return None
+
+    @property
     def size_list(self):
         if self.sizes:
             return [s.strip() for s in self.sizes.split(',')]
+        return []
+
+    @property
+    def tag_list(self):
+        if self.tags:
+            return [t.strip() for t in self.tags.split(',')]
         return []
 
     @property

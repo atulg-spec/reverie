@@ -10,22 +10,22 @@ def home(request):
 
     testimonials = [
         {
-            'name': 'Priya Sharma',
-            'location': 'Jaipur',
-            'text': 'Absolutely love the jutti collection! The craftsmanship is exquisite and the colors are so vibrant. Received so many compliments!',
-            'rating': 5,
-        },
-        {
-            'name': 'Meera Patel',
+            'name': 'Vikram Malhotra',
             'location': 'Mumbai',
-            'text': 'Ordered a frock for my daughter\'s birthday. The quality exceeded my expectations. She looked like a little princess!',
+            'text': "The tailoring on the 'Executive' series is impeccable. It's rare to find such quality at this price point. A staple for my boardroom meetings.",
             'rating': 5,
         },
         {
-            'name': 'Ananya Verma',
+            'name': 'Siddharth Rao',
+            'location': 'Bangalore',
+            'text': "Officio has completely transformed my professional wardrobe. The slim-fit shirts are breathable and maintain their sharp look all day.",
+            'rating': 5,
+        },
+        {
+            'name': 'Arjun Mehta',
             'location': 'Delhi',
-            'text': 'The Rajasthani juttis are simply gorgeous. Perfect blend of traditional art and modern comfort. Will order again!',
-            'rating': 4,
+            'text': "Ordered the Combo pack and I'm impressed by the fabric quality. Fast delivery and premium packaging make it feel like a luxury purchase.",
+            'rating': 5,
         },
     ]
 

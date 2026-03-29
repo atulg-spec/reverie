@@ -4,29 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{% block title %}{{ settings.store_name }} - {{ settings.tagline }}{% endblock %}</title>
-    <meta name="description" content="{% block meta_description %}Premium Artisanal Footwear and Kids Fashion apparel. Handcrafted elegance for the modern lifestyle.{% endblock %}">
+    <title>{% block title %}{{ settings.store_name|default:"Officio" }} - {{ settings.tagline|default:"Premium Corporate Wear" }}{% endblock %}</title>
+    <meta name="description" content="{% block meta_description %}Premium corporate fashion for the modern professional. Sharper, bolder, and more confident.{% endblock %}">
     <link rel="canonical" href="{% block canonical_url %}{{ request.build_absolute_uri }}{% endblock %}">
 
     <!-- SEO Meta Tags -->
     <meta name="robots" content="index, follow">
-    <meta name="author" content="{{ settings.store_name }}">
-    <meta name="google-site-verification" content="GSC_VERIFICATION_PLACEHOLDER">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="{{ request.build_absolute_uri }}">
-    <meta property="og:title" content="{% block og_title %}{{ settings.store_name }} - {{ settings.tagline }}{% endblock %}">
-    <meta property="og:description" content="{% block og_description %}Discover premium handcrafted footwear and designer kids' apparel. Quality and style for every occasion.{% endblock %}">
-    <meta property="og:image" content="{% block og_image %}{% if settings.banner_image %}{{ request.scheme }}://{{ request.get_host }}{{ settings.banner_image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/og-main.jpg' %}{% endif %}{% endblock %}">
-    <meta property="og:site_name" content="{{ settings.store_name }}">
-
-    <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:url" content="{{ request.build_absolute_uri }}">
-    <meta name="twitter:title" content="{% block twitter_title %}{{ settings.store_name }}{% endblock %}">
-    <meta name="twitter:description" content="{% block twitter_description %}Premium Artisanal Footwear and Kids Fashion.{% endblock %}">
-    <meta name="twitter:image" content="{% block twitter_image %}{% if settings.banner_image %}{{ request.scheme }}://{{ request.get_host }}{{ settings.banner_image.url }}{% else %}{% static 'img/og-main.jpg' %}{% endif %}{% endblock %}">
+    <meta name="author" content="{{ settings.store_name|default:'Officio' }}">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -35,15 +19,23 @@
             theme: {
                 extend: {
                     colors: {
-                        maroon: { 50: '#fdf2f4', 100: '#fce7eb', 200: '#f9d0d9', 300: '#f4a9ba', 400: '#ed7695', 500: '#e04a73', 600: '#cc2a5a', 700: '#ab1e49', 800: '#8f1b3f', 900: '#7a1a3a', 950: '#440a1c' },
-                        gold: { 50: '#fefbeb', 100: '#fdf4c8', 200: '#fbe78b', 400: '#f5c518', 500: '#d4a017', 600: '#b8860b', 700: '#8b6914', 800: '#735518', 900: '#61491b' },
-                        beige: { 50: '#fdfbf7', 100: '#faf6ed', 200: '#f3ebd5', 300: '#e8d9b8', 400: '#d4bc8a', 500: '#c4a265', 600: '#b58b4a', 700: '#97703c', 800: '#7c5b35', 900: '#664b2e' },
-                        ivory: { 50: '#fffef7', 100: '#fffdf0', 200: '#fffae0' },
+                        brand: {
+                            black: '#000000',
+                            white: '#FFFFFF',
+                            grey: '#F5F5F5',
+                            darkgrey: '#333333',
+                            gold: '#D4AF37',
+                            mutedblue: '#4A90E2',
+                        }
                     },
                     fontFamily: {
-                        display: ['Playfair Display', 'serif'],
-                        body: ['Poppins', 'sans-serif'],
+                        sans: ['Inter', 'Outfit', 'system-ui', 'sans-serif'],
+                        display: ['Inter', 'sans-serif'],
                     },
+                    letterSpacing: {
+                        premium: '0.1em',
+                        super: '0.2em',
+                    }
                 }
             }
         }
@@ -52,82 +44,168 @@
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,500&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <style>
+        .nav-link {
+            position: relative;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 1px;
+            bottom: -2px;
+            left: 0;
+            background-color: #000;
+            transition: width 0.3s ease;
+        }
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        /* Premium Scroll Reveals */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Announcement Pulse */
+        @keyframes pulse-soft {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        .animate-pulse-soft {
+            animation: pulse-soft 3s infinite ease-in-out;
+        }
+
+        /* Popups */
+        .modal-overlay {
+            background: rgba(0,0,0,0.4);
+            backdrop-filter: blur(4px);
+            transition: opacity 0.4s ease;
+        }
+        
+        /* Skeleton Loader */
+        .skeleton {
+            background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+            background-size: 200% 100%;
+            animation: skeleton-loading 1.5s infinite;
+        }
+        @keyframes skeleton-loading {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+    </style>
     {% block extra_css %}{% endblock %}
 </head>
-<body class="font-body bg-ivory-50 text-gray-800 min-h-screen flex flex-col">
+<body class="font-sans bg-white text-brand-black min-h-screen flex flex-col selection:bg-brand-black selection:text-white">
 
-    <!-- Top Bar -->
-    <div class="bg-maroon-900 text-gold-200 text-[10px] md:text-xs py-2 px-4 flex flex-col md:flex-row justify-between items-center font-body tracking-wider gap-2">
-        <div class="md:flex-1">✨ Free Shipping on Orders Above ₹999 | Handcrafted with Love ✨</div>
-        <div class="flex items-center gap-3">
-            <span class="flex items-center gap-1">
-                📍 <span class="opacity-80">Shipping to:</span> 
-                <span class="font-semibold text-white">{% if user_state %}{{ user_state }}{% else %}India{% endif %}</span>
-            </span>
-            <div class="flex gap-2 border-l border-maroon-700 pl-3">
-                <a href="?set_state=Uttar Pradesh" class="hover:text-white transition-colors {% if user_state == 'Uttar Pradesh' %}text-white font-bold underline{% endif %}">UP</a>
-                <a href="?set_state=Delhi" class="hover:text-white transition-colors {% if user_state == 'Delhi' %}text-white font-bold underline{% endif %}">Delhi</a>
-                <a href="?set_state=Rajasthan" class="hover:text-white transition-colors {% if user_state == 'Rajasthan' %}text-white font-bold underline{% endif %}">Rajasthan</a>
-            </div>
-        </div>
+    <!-- Announcement Bar -->
+    <div id="announcement-bar" class="bg-brand-black text-white text-[10px] md:text-xs py-2.5 px-4 text-center tracking-premium uppercase font-medium sticky top-0 z-[60] flex items-center justify-center transition-transform duration-500">
+        <span class="animate-pulse-soft flex-1">
+            🔥 Flat 20% OFF on First Order | Use Code: <span class="text-brand-gold font-bold">OFF20</span>
+        </span>
+        <button onclick="document.getElementById('announcement-bar').style.transform = 'translateY(-100%)'" class="absolute right-4 hover:text-brand-gold">
+            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
     </div>
 
     <!-- Navigation -->
-    <nav id="main-nav" class="bg-white/80 backdrop-blur-lg sticky top-0 z-50 border-b border-beige-200 transition-all duration-300">
+    <nav id="main-nav" class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-brand-grey transition-all duration-500">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex justify-between items-center h-16 md:h-20">
+            <div class="flex justify-between items-center h-16 md:h-20 transition-all duration-500" id="nav-inner">
                 <!-- Logo -->
                 <a href="{% url 'core:home' %}" class="flex items-center gap-2 group">
-                    {% if settings.logo %}
-                    <img src="{{ settings.logo.url }}" alt="{{ settings.store_name }}" class="h-8 md:h-10 w-auto object-contain transition-transform group-hover:scale-105">
-                    {% else %}
-                    <span class="text-2xl md:text-3xl font-display font-bold text-maroon-800 group-hover:text-gold-600 transition-colors uppercase tracking-tight">
-                        {{ settings.store_name|default:"Elegance" }}
+                    <span class="text-2xl md:text-3xl font-bold tracking-super uppercase" id="nav-logo">
+                        {{ settings.store_name|default:"Officio" }}
                     </span>
-                    {% endif %}
-                    <span class="hidden sm:block text-xs text-beige-600 font-body tracking-widest uppercase">{{ settings.tagline|default:"Premium Fashion" }}</span>
                 </a>
 
                 <!-- Desktop Menu -->
-                <div class="hidden md:flex items-center gap-8">
-                    <a href="{% url 'core:home' %}" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Home</a>
-                    <a href="{% url 'products:shop' %}" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Collection</a>
-                    <a href="{% url 'products:shop' %}rajasthani-ladies-jutti/" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Footwear</a>
-                    <a href="{% url 'products:shop' %}kids-fancy-frocks/" class="nav-link font-body text-sm tracking-wide text-gray-700 hover:text-maroon-700 transition-colors">Kids Wear</a>
+                <div class="hidden md:flex items-center gap-10">
+                    <a href="{% url 'core:home' %}" class="nav-link text-xs font-semibold tracking-premium uppercase hover:text-brand-darkgrey transition-colors">Home</a>
+                    <a href="{% url 'products:shop' %}" class="nav-link text-xs font-semibold tracking-premium uppercase hover:text-brand-darkgrey transition-colors">New Arrivals</a>
+                    <a href="{% url 'products:shop' %}?category=formal-shirts" class="nav-link text-xs font-semibold tracking-premium uppercase hover:text-brand-darkgrey transition-colors">Shirts</a>
+                    <a href="{% url 'products:shop' %}?category=trousers" class="nav-link text-xs font-semibold tracking-premium uppercase hover:text-brand-darkgrey transition-colors">Trousers</a>
+                    <a href="{% url 'products:shop' %}?category=combos" class="nav-link text-xs font-semibold tracking-premium uppercase hover:text-brand-darkgrey transition-colors">Combos</a>
                 </div>
 
-                <!-- Cart + Mobile Toggle -->
-                <div class="flex items-center gap-4">
+                <!-- Icons -->
+                <div class="flex items-center gap-6">
+                    <button class="text-brand-black hover:opacity-70 transition-opacity">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+                    </button>
                     <a href="{% url 'orders:cart' %}" class="relative group" id="nav-cart-link">
-                        <svg class="w-6 h-6 text-gray-700 group-hover:text-maroon-700 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg class="w-5 h-5 text-brand-black group-hover:opacity-70 transition-opacity" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
                         </svg>
-                        <span id="cart-count-badge" class="absolute -top-2 -right-2 bg-maroon-700 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-body font-semibold hidden">0</span>
+                        <span id="cart-count-badge" class="absolute -top-2 -right-2 bg-brand-black text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold hidden">0</span>
                     </a>
-
+                    
                     <!-- Mobile Menu Button -->
-                    <button id="mobile-menu-btn" class="md:hidden text-gray-700 hover:text-maroon-700 transition-colors">
+                    <button id="mobile-menu-btn" class="md:hidden text-brand-black">
                         <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"/>
                         </svg>
                     </button>
                 </div>
             </div>
 
             <!-- Mobile Menu -->
-            <div id="mobile-menu" class="md:hidden hidden pb-4 border-t border-beige-200 mt-2">
-                <div class="flex flex-col gap-3 pt-4">
-                    <a href="{% url 'core:home' %}" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Home</a>
-                    <a href="{% url 'products:shop' %}" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Shop All</a>
-                    <a href="{% url 'products:shop' %}rajasthani-ladies-jutti/" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Jutti Collection</a>
-                    <a href="{% url 'products:shop' %}kids-fancy-frocks/" class="font-body text-sm text-gray-700 hover:text-maroon-700 transition-colors px-2 py-1">Kids Frocks</a>
-                </div>
+            <div id="mobile-menu" class="md:hidden hidden pb-8 pt-4 space-y-4 border-t border-brand-grey">
+                <a href="{% url 'core:home' %}" class="block text-xs font-bold tracking-premium uppercase">Home</a>
+                <a href="{% url 'products:shop' %}" class="block text-xs font-bold tracking-premium uppercase">Collection</a>
+                <a href="{% url 'products:shop' %}?category=formal-shirts" class="block text-xs font-bold tracking-premium uppercase">Formal Shirts</a>
+                <a href="{% url 'products:shop' %}?category=trousers" class="block text-xs font-bold tracking-premium uppercase">Trousers</a>
+                <a href="{% url 'products:shop' %}?category=combos" class="block text-xs font-bold tracking-premium uppercase">Combo Offers</a>
             </div>
         </div>
     </nav>
+
+    <!-- Exit Intent / First Order Modal -->
+    <div id="promo-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 modal-overlay opacity-0 transition-opacity duration-300">
+        <div class="bg-white max-w-md w-full p-10 relative overflow-hidden shadow-2xl">
+            <button onclick="closePromoModal()" class="absolute top-6 right-6 text-gray-400 hover:text-brand-black transition-colors">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+            </button>
+            
+            <div class="text-center">
+                <span class="text-[10px] font-bold tracking-super text-brand-gold uppercase mb-4 block">Limited Exclusive</span>
+                <h2 class="text-2xl font-bold uppercase tracking-tight mb-4" id="promo-title">Welcome to Officio</h2>
+                <p class="text-[10px] text-gray-500 tracking-widest uppercase mb-8 leading-loose" id="promo-desc">
+                    Secure your first acquisition with an exclusive privileged discount.
+                </p>
+                
+                <div class="bg-brand-grey p-6 mb-8 border border-neutral-100">
+                    <p class="text-[9px] text-gray-400 uppercase tracking-widest mb-2">Use Privileged Code</p>
+                    <p class="text-3xl font-bold tracking-tighter" id="promo-code">OFF200</p>
+                </div>
+
+                <a href="{% url 'products:shop' %}" class="block w-full py-4 bg-brand-black text-white text-[10px] font-bold tracking-premium uppercase hover:bg-brand-darkgrey transition-all shadow-xl">
+                    Claim Your Offer
+                </a>
+            </div>
+            
+            <div class="absolute -left-4 -bottom-4 text-brand-black/5 text-8xl font-black select-none pointer-events-none">O</div>
+        </div>
+    </div>
+
+    <!-- Recent Purchase Notification -->
+    <div id="recent-purchase" class="fixed bottom-6 left-6 z-[80] bg-white border border-brand-grey p-4 shadow-2xl flex items-center gap-4 max-w-xs transition-all duration-500 translate-y-20 opacity-0">
+        <div class="w-12 h-16 bg-brand-grey flex-shrink-0 animate-pulse" id="recent-img"></div>
+        <div class="flex-1">
+            <p class="text-[8px] text-gray-400 font-bold tracking-widest uppercase mb-0.5">Verified Purchase</p>
+            <p class="text-[10px] font-bold tracking-premium uppercase" id="recent-text">Someone from Delhi just bought Formal Shirt</p>
+            <p class="text-[8px] text-brand-gold font-medium tracking-widest uppercase mt-1">2 mins ago</p>
+        </div>
+    </div>
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-3"></div>
@@ -138,49 +216,154 @@
     </main>
 
     <!-- Footer -->
-    <footer class="bg-maroon-950 text-beige-200">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-16">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
+    <footer class="bg-brand-black text-white pt-20 pb-10">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
                 <!-- Brand -->
                 <div class="md:col-span-1">
-                    <h3 class="font-display text-2xl font-bold text-gold-400 mb-3 uppercase tracking-tight">{{ settings.store_name|default:"Elegance" }}</h3>
-                    <p class="text-sm text-beige-400 leading-relaxed">{{ settings.tagline|default:"Premium Artisanal Fashion" }}. Handcrafted with precision and care for the modern lifestyle.</p>
+                    <h3 class="text-xl font-bold tracking-super uppercase mb-6">{{ settings.store_name|default:"Officio" }}</h3>
+                    <p class="text-xs text-gray-400 leading-relaxed tracking-wide uppercase">
+                        Premium Corporate Wear for the Modern Professional. Clean, Minimal, and Sharp.
+                    </p>
+                    <div class="flex gap-4 mt-6">
+                        <a href="https://instagram.com" class="hover:text-brand-gold transition-colors">
+                            <span class="sr-only">Instagram</span>
+                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                        </a>
+                    </div>
                 </div>
-                <!-- Quick Links -->
+                <!-- Shop -->
                 <div>
-                    <h4 class="font-display text-lg font-semibold text-gold-400 mb-4">Quick Links</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="{% url 'core:home' %}" class="text-beige-400 hover:text-gold-400 transition-colors">Home</a></li>
-                        <li><a href="{% url 'products:shop' %}" class="text-beige-400 hover:text-gold-400 transition-colors">Shop</a></li>
-                        <li><a href="{% url 'orders:cart' %}" class="text-beige-400 hover:text-gold-400 transition-colors">Cart</a></li>
+                    <h4 class="text-xs font-bold tracking-premium uppercase mb-6">Shop</h4>
+                    <ul class="space-y-4 text-[10px] tracking-premium uppercase font-medium">
+                        <li><a href="{% url 'products:shop' %}?category=formal-shirts" class="text-gray-400 hover:text-white transition-colors">Formal Shirts</a></li>
+                        <li><a href="{% url 'products:shop' %}?category=trousers" class="text-gray-400 hover:text-white transition-colors">Trousers</a></li>
+                        <li><a href="{% url 'products:shop' %}?category=combos" class="text-gray-400 hover:text-white transition-colors">Combos</a></li>
                     </ul>
                 </div>
-                <!-- Categories -->
+                <!-- Support -->
                 <div>
-                    <h4 class="font-display text-lg font-semibold text-gold-400 mb-4">Categories</h4>
-                    <ul class="space-y-2 text-sm">
-                        <li><a href="{% url 'products:shop' %}rajasthani-ladies-jutti/" class="text-beige-400 hover:text-gold-400 transition-colors">Rajasthani Jutti</a></li>
-                        <li><a href="{% url 'products:shop' %}kids-fancy-frocks/" class="text-beige-400 hover:text-gold-400 transition-colors">Kids Frocks</a></li>
+                    <h4 class="text-xs font-bold tracking-premium uppercase mb-6">Support</h4>
+                    <ul class="space-y-4 text-[10px] tracking-premium uppercase font-medium">
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Sizing Guide</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Shipping Policy</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Returns & Exchanges</a></li>
+                        <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Contact Us</a></li>
                     </ul>
                 </div>
-                <!-- Contact -->
+                <!-- Newsletter -->
                 <div>
-                    <h4 class="font-display text-lg font-semibold text-gold-400 mb-4">Contact</h4>
-                    <ul class="space-y-2 text-sm text-beige-400">
-                        <li>📧 {{ settings.email }}</li>
-                        <li>📞 {{ settings.phone }}</li>
-                        <li>📍 {{ settings.address }}</li>
-                    </ul>
+                    <h4 class="text-xs font-bold tracking-premium uppercase mb-6">Join the Inner Circle</h4>
+                    <p class="text-[10px] text-gray-400 tracking-wide uppercase mb-4 leading-relaxed">Subscribe to receive updates, access to exclusive deals, and more.</p>
+                    <div class="flex border-b border-gray-700 pb-2">
+                        <input type="email" placeholder="Email Address" class="bg-transparent border-none text-[10px] w-full focus:ring-0 placeholder:text-gray-600 uppercase tracking-premium">
+                        <button class="text-[10px] font-bold tracking-premium uppercase ml-2 hover:text-brand-gold transition-colors text-nowrap">Subscribe</button>
+                    </div>
                 </div>
             </div>
-            <div class="border-t border-maroon-800 mt-10 pt-8 text-center">
-                <p class="text-xs text-beige-500">© 2026 {{ settings.store_name|default:"Elegance" }}. All rights reserved. Handcrafted with ❤️.</p>
+            <div class="border-t border-gray-900 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
+                <p class="text-[8px] text-gray-500 tracking-premium uppercase">© 2026 {{ settings.store_name|default:"Officio" }}. Handcrafted for professionals.</p>
+                <div class="flex gap-4 grayscale opacity-50">
+                    <div class="w-8 h-5 bg-gray-800 rounded"></div>
+                    <div class="w-8 h-5 bg-gray-800 rounded"></div>
+                    <div class="w-8 h-5 bg-gray-800 rounded"></div>
+                </div>
             </div>
         </div>
     </footer>
 
     <script src="{% static 'js/cart.js' %}"></script>
     <script src="{% static 'js/main.js' %}"></script>
+    <script>
+        // Mobile Menu Toggle
+        const mobileBtn = document.getElementById('mobile-menu-btn');
+        const mobileMenu = document.getElementById('mobile-menu');
+        mobileBtn.addEventListener('click', () => {
+            mobileMenu.classList.toggle('hidden');
+        });
+
+        // Global Scroll Reveal
+        const revealElements = () => {
+            const reveals = document.querySelectorAll('.reveal');
+            const windowHeight = window.innerHeight;
+            reveals.forEach(el => {
+                const revealTop = el.getBoundingClientRect().top;
+                if (revealTop < windowHeight - 50) {
+                    el.classList.add('active');
+                }
+            });
+        };
+        window.addEventListener('scroll', revealElements);
+        document.addEventListener('DOMContentLoaded', revealElements);
+
+        // Sticky Navbar Adjustment
+        const nav = document.getElementById('main-nav');
+        const navInner = document.getElementById('nav-inner');
+        
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 50) {
+                nav.classList.add('shadow-xl', 'bg-white/100');
+                navInner.classList.replace('h-20', 'h-16');
+            } else {
+                nav.classList.remove('shadow-xl', 'bg-white/100');
+                navInner.classList.replace('h-16', 'h-20');
+            }
+        });
+
+        // Popups Logic
+        const promoModal = document.getElementById('promo-modal');
+        const closePromoModal = () => {
+            promoModal.classList.replace('opacity-100', 'opacity-0');
+            setTimeout(() => promoModal.classList.replace('flex', 'hidden'), 300);
+        };
+        const showPromoModal = (title, desc, code) => {
+            if (localStorage.getItem('officio_promo_dismissed')) return;
+            document.getElementById('promo-title').textContent = title;
+            document.getElementById('promo-desc').textContent = desc;
+            document.getElementById('promo-code').textContent = code;
+            promoModal.classList.replace('hidden', 'flex');
+            setTimeout(() => promoModal.classList.replace('opacity-0', 'opacity-100'), 10);
+            localStorage.setItem('officio_promo_dismissed', 'true');
+        };
+
+        // 1. Welcome Delay Popup (7s)
+        setTimeout(() => {
+            showPromoModal('Welcome to Officio', 'Get ₹200 OFF on your first purchase of excellence.', 'OFF200');
+        }, 7000);
+
+        // 2. Exit Intent
+        document.addEventListener('mouseleave', (e) => {
+            if (e.clientY < 0) {
+                showPromoModal('Wait! One Last Look', 'Secure 10% OFF before you depart from our collection.', 'STAY10');
+            }
+        });
+
+        // 3. Recent Purchase Rotation
+        const names = ['Rohit', 'Siddharth', 'Vikram', 'Anjali', 'Sameer', 'Arjun', 'Isha'];
+        const cities = ['Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Pune', 'Hyderabad'];
+        const products = ['Formal Shirt', 'Slim-fit Trouser', 'Executive Blazer', 'Corporate Combo'];
+        
+        const showRecent = () => {
+            const recent = document.getElementById('recent-purchase');
+            if (!recent) return;
+            const name = names[Math.floor(Math.random() * names.length)];
+            const city = cities[Math.floor(Math.random() * cities.length)];
+            const product = products[Math.floor(Math.random() * products.length)];
+            
+            document.getElementById('recent-text').innerHTML = `${name} from ${city} just bought <span class="text-brand-black font-bold">${product}</span>`;
+            
+            recent.classList.remove('translate-y-20', 'opacity-0');
+            recent.classList.add('translate-y-0', 'opacity-100');
+            
+            setTimeout(() => {
+                recent.classList.add('translate-y-20', 'opacity-0');
+                recent.classList.remove('translate-y-0', 'opacity-100');
+            }, 6000);
+        };
+
+        setInterval(showRecent, 15000);
+        setTimeout(showRecent, 3000); // Initial trigger
+    </script>
     {% block extra_js %}{% endblock %}
 </body>
 </html>

@@ -1,144 +1,166 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}{% if active_category %}{{ active_category.name }}{% else %}Collection{% endif %} - {{ settings.store_name }}{% endblock %}
-{% block meta_description %}{% if active_category %}{{ active_category.description|truncatechars:160 }}{% else %}Explore our premium collection of artisanal footwear and designer kids fashion.{% endif %}{% endblock %}
-{% block canonical_url %}{{ request.scheme }}://{{ request.get_host }}{% if active_category %}{% url 'products:shop_by_category' active_category.slug %}{% else %}{% url 'products:shop' %}{% endif %}{% endblock %}
-
-{% block og_title %}{% if active_category %}{{ active_category.name }}{% else %}Our Collection{% endif %} | {{ settings.store_name }}{% endblock %}
-{% block og_description %}{% if active_category %}{{ active_category.description|truncatechars:160 }}{% else %}Premium artisanal fashion for the modern lifestyle.{% endif %}{% endblock %}
+{% block title %}{% if active_category %}{{ active_category.name }}{% else %}Collection{% endif %} | Officio{% endblock %}
 
 {% block content %}
 <!-- Page Header -->
-<section class="bg-gradient-to-r from-maroon-900 to-maroon-800 py-12 md:py-16">
+<section class="bg-brand-black py-20 border-b border-brand-grey">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-        <h1 class="font-display text-3xl md:text-5xl font-bold text-white mb-2">
-            {% if active_category %}{{ active_category.name }}{% else %}{{ settings.store_name|default:"Our" }} Collection{% endif %}
+        <span class="text-[10px] font-bold tracking-super uppercase text-brand-gold mb-4 block">Official Collection</span>
+        <h1 class="text-4xl md:text-5xl font-bold text-white mb-6 uppercase tracking-tight">
+            {% if active_category %}{{ active_category.name }}{% else %}The Full Wardrobe{% endif %}
         </h1>
-        <p class="text-beige-200 font-body text-sm md:text-base">
-            {% if active_category %}{{ active_category.description }}{% else %}{{ settings.tagline|default:"Handpicked designs, crafted with love" }}{% endif %}
+        <div class="w-12 h-[1px] bg-brand-gold mx-auto mb-6"></div>
+        <p class="text-[10px] md:text-xs text-brand-grey font-bold tracking-premium uppercase max-w-2xl mx-auto leading-loose">
+            {% if active_category %}{{ active_category.description }}{% else %}Sharp tailoring and premium fabrics for the modern professional. Curated for excellence.{% endif %}
         </p>
     </div>
 </section>
 
-<section class="py-10 md:py-16">
+<section class="py-16 md:py-24 bg-white">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex flex-col lg:flex-row gap-8">
+        <div class="flex flex-col lg:flex-row gap-16">
             
             <!-- Sidebar Filters -->
-            <aside class="lg:w-64 flex-shrink-0">
-                <div class="glass-card bg-white/80 backdrop-blur-sm rounded-xl p-6 border border-beige-200 shadow-sm sticky top-24">
-                    <h3 class="font-display text-lg font-semibold text-maroon-900 mb-4">Filters</h3>
-                    
-                    <form method="GET" action="{% url 'products:shop' %}" id="filter-form">
+            <aside class="lg:w-72 flex-shrink-0">
+                <div class="sticky top-24 space-y-12">
+                    <form method="GET" action="{% url 'products:shop' %}" id="filter-form" class="space-y-12">
                         <!-- Categories -->
-                        <div class="mb-6">
-                            <h4 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Category</h4>
-                            <div class="space-y-2">
-                                <a href="{% url 'products:shop' %}" class="flex items-center gap-2 group">
-                                    <div class="w-4 h-4 rounded-full border border-maroon-300 flex items-center justify-center {% if not current_category %}border-maroon-700{% endif %}">
-                                        {% if not current_category %}
-                                        <div class="w-2 h-2 rounded-full bg-maroon-700"></div>
-                                        {% endif %}
-                                    </div>
-                                    <span class="font-body text-sm {% if not current_category %}text-maroon-900 font-semibold{% else %}text-gray-600{% endif %} group-hover:text-maroon-700 transition-colors">All Products</span>
+                        <div>
+                            <h3 class="text-[10px] font-bold tracking-super uppercase text-brand-black mb-8">Collections</h3>
+                            <div class="space-y-4">
+                                <a href="{% url 'products:shop' %}" 
+                                   class="block text-[10px] font-bold tracking-premium uppercase transition-all duration-300 {% if not current_category %}text-brand-black border-l-2 border-brand-black pl-4{% else %}text-gray-400 hover:text-brand-black hover:pl-2{% endif %}">
+                                    All Styles
                                 </a>
                                 {% for cat in categories %}
-                                <a href="{% url 'products:shop_by_category' cat.slug %}" class="flex items-center gap-2 group">
-                                    <div class="w-4 h-4 rounded-full border border-maroon-300 flex items-center justify-center {% if current_category == cat.slug %}border-maroon-700{% endif %}">
-                                        {% if current_category == cat.slug %}
-                                        <div class="w-2 h-2 rounded-full bg-maroon-700"></div>
-                                        {% endif %}
-                                    </div>
-                                    <span class="font-body text-sm {% if current_category == cat.slug %}text-maroon-900 font-semibold{% else %}text-gray-600{% endif %} group-hover:text-maroon-700 transition-colors">{{ cat.name }}</span>
+                                <a href="{% url 'products:shop_by_category' cat.slug %}" 
+                                   class="block text-[10px] font-bold tracking-premium uppercase transition-all duration-300 {% if current_category == cat.slug %}text-brand-black border-l-2 border-brand-black pl-4{% else %}text-gray-400 hover:text-brand-black hover:pl-2{% endif %}">
+                                    {{ cat.name }}
                                 </a>
                                 {% endfor %}
                             </div>
                         </div>
 
                         <!-- Price Range -->
-                        <div class="mb-6">
-                            <h4 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Price Range</h4>
-                            <div class="flex gap-2 items-center">
-                                <input type="number" name="min_price" value="{{ min_price }}" placeholder="₹ Min" 
-                                       class="w-full px-3 py-2 border border-beige-300 rounded-lg text-sm font-body focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60">
-                                <span class="text-gray-400">-</span>
-                                <input type="number" name="max_price" value="{{ max_price }}" placeholder="₹ Max" 
-                                       class="w-full px-3 py-2 border border-beige-300 rounded-lg text-sm font-body focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60">
+                        <div>
+                            <h3 class="text-[10px] font-bold tracking-super uppercase text-brand-black mb-8">Price Filter</h3>
+                            <div class="flex gap-4 items-center mb-6">
+                                <input type="number" name="min_price" value="{{ min_price }}" placeholder="MIN" 
+                                       class="w-full px-4 py-3 border border-brand-grey text-[10px] font-bold tracking-widest focus:border-brand-black outline-none bg-brand-grey/30">
+                                <span class="text-gray-300">—</span>
+                                <input type="number" name="max_price" value="{{ max_price }}" placeholder="MAX" 
+                                       class="w-full px-4 py-3 border border-brand-grey text-[10px] font-bold tracking-widest focus:border-brand-black outline-none bg-brand-grey/30">
                             </div>
-                            <button type="submit" class="mt-3 w-full py-2 bg-maroon-800 text-white font-body text-xs font-semibold rounded-lg hover:bg-maroon-700 transition-colors">
-                                Apply
+                            <button type="submit" class="w-full py-4 bg-brand-black text-white text-[10px] font-bold tracking-premium uppercase hover:bg-brand-darkgrey transition-all duration-300">
+                                Apply Filter
                             </button>
                         </div>
 
                         <!-- Sort -->
                         <div>
-                            <h4 class="font-body text-sm font-semibold text-gray-700 mb-3 tracking-wide uppercase">Sort By</h4>
-                            <select name="sort" class="w-full px-3 py-2 border border-beige-300 rounded-lg text-sm font-body focus:ring-2 focus:ring-maroon-300 focus:border-maroon-500 outline-none bg-white/60"
+                            <h3 class="text-[10px] font-bold tracking-super uppercase text-brand-black mb-8">Sort Order</h3>
+                            <select name="sort" class="w-full px-4 py-4 border border-brand-grey text-[10px] font-bold tracking-premium uppercase focus:border-brand-black outline-none bg-white cursor-pointer"
                                     onchange="this.form.submit()">
-                                <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest</option>
-                                <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low → High</option>
-                                <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High → Low</option>
+                                <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Most Recent</option>
+                                <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+                                <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
                             </select>
                         </div>
                     </form>
+                    
+                    <!-- Sidebar Banner -->
+                    <div class="bg-brand-grey p-8 relative overflow-hidden group">
+                        <div class="relative z-10">
+                            <h4 class="text-[10px] font-bold tracking-premium uppercase mb-2">Need Assistance?</h4>
+                            <p class="text-[8px] text-gray-500 tracking-widest uppercase mb-4">Our style consultants are here to help.</p>
+                            <a href="#" class="text-[10px] font-bold border-b border-brand-black pb-0.5 uppercase tracking-premium">Contact Us</a>
+                        </div>
+                        <div class="absolute -right-4 -bottom-4 text-brand-black/5 text-6xl font-black select-none group-hover:scale-110 transition-transform duration-700">O</div>
+                    </div>
                 </div>
             </aside>
 
             <!-- Products Grid -->
             <div class="flex-1">
-                <div class="flex items-center justify-between mb-6">
-                    <p class="font-body text-sm text-gray-500">{{ products|length }} product{{ products|length|pluralize }} found</p>
+                <div class="flex items-center justify-between mb-12 border-b border-brand-grey pb-8 reveal">
+                    <p class="text-[10px] font-bold tracking-premium uppercase text-gray-400">
+                        {{ products|length }} Styles Discovered
+                    </p>
+                    <div class="hidden lg:flex items-center gap-4">
+                        <span class="text-[10px] font-bold tracking-premium uppercase text-brand-black">Layout:</span>
+                        <div class="flex gap-2">
+                            <div class="w-3 h-3 bg-brand-black border border-brand-black"></div>
+                            <div class="w-3 h-3 bg-white border border-brand-grey"></div>
+                        </div>
+                    </div>
                 </div>
 
                 {% if products %}
-                <div class="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
+                <div class="grid grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
                     {% for product in products %}
-                    <a href="{% url 'products:product_detail' product.slug %}" class="group" id="product-{{ product.id }}">
-                        <div class="product-card bg-white rounded-lg overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 border border-beige-100">
-                            <div class="relative aspect-[3/4] overflow-hidden bg-beige-50">
-                                {% if product.primary_image %}
-                                <img src="{{ product.primary_image.image.url }}" 
-                                     alt="{{ product.name }}" 
-                                     class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                                     loading="lazy">
-                                {% else %}
-                                <div class="w-full h-full flex items-center justify-center text-beige-400">
-                                    <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
-                                </div>
-                                {% endif %}
-                                {% if product.discount_percent %}
-                                <span class="absolute top-3 left-3 bg-maroon-700 text-white text-xs font-body font-semibold px-2 py-1 rounded-sm">
-                                    -{{ product.discount_percent }}%
-                                </span>
-                                {% endif %}
-                                {% if not product.in_stock %}
-                                <div class="absolute inset-0 bg-gray-900/50 flex items-center justify-center">
-                                    <span class="bg-white/90 text-gray-900 font-body font-semibold text-sm px-4 py-2 rounded">Out of Stock</span>
-                                </div>
-                                {% endif %}
-                                <div class="absolute inset-0 bg-maroon-950/0 group-hover:bg-maroon-950/10 transition-colors duration-300"></div>
+                    <div class="group relative reveal">
+                        <a href="{% url 'products:product_detail' product.slug %}" class="block overflow-hidden bg-brand-grey mb-6 aspect-[3/4] relative shadow-sm group-hover:shadow-xl transition-all duration-700">
+                            {% if product.primary_image %}
+                            <img src="{{ product.primary_image.image.url }}" 
+                                 alt="{{ product.name }}" 
+                                 class="absolute inset-0 w-full h-full object-cover transition-all duration-1000 {% if product.secondary_image %}group-hover:opacity-0 group-hover:scale-110{% else %}group-hover:scale-110{% endif %}"
+                                 loading="lazy">
+                            
+                            {% if product.secondary_image %}
+                            <img src="{{ product.secondary_image.image.url }}" 
+                                 alt="{{ product.name }} - Alternate view" 
+                                 class="absolute inset-0 w-full h-full object-cover transition-all duration-1000 opacity-0 group-hover:opacity-100 group-hover:scale-105"
+                                 loading="lazy">
+                            {% endif %}
+
+                            {% else %}
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 text-[10px] tracking-premium uppercase">
+                                Image Unavailable
                             </div>
-                            <div class="p-3 md:p-4">
-                                <p class="text-xs text-gold-700 font-body tracking-wide uppercase mb-1">{{ product.category.name }}</p>
-                                <h3 class="font-display text-sm md:text-base font-semibold text-gray-900 mb-2 line-clamp-2 group-hover:text-maroon-700 transition-colors">{{ product.name }}</h3>
-                                <div class="flex items-center gap-2">
-                                    <span class="text-maroon-800 font-body font-bold text-base">₹{{ product.price|floatformat:0 }}</span>
-                                    {% if product.original_price %}
-                                    <span class="text-gray-400 font-body text-xs line-through">₹{{ product.original_price|floatformat:0 }}</span>
-                                    {% endif %}
-                                </div>
+                            {% endif %}
+                            
+                            <!-- Overlay -->
+                            <div class="absolute inset-0 bg-brand-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-end p-6">
+                                <span class="w-full py-3 bg-white text-brand-black text-[9px] font-bold tracking-premium uppercase text-center shadow-2xl translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                                    View Details
+                                </span>
+                            </div>
+
+                            {% if product.discount_percent %}
+                            <span class="absolute top-6 left-6 bg-brand-black text-white text-[8px] font-bold tracking-premium px-3 py-1 uppercase z-10">
+                                -{{ product.discount_percent }}%
+                            </span>
+                            {% endif %}
+                            
+                            {% if not product.in_stock %}
+                            <div class="absolute inset-0 bg-brand-black/40 flex items-center justify-center z-20">
+                                <span class="text-white text-[10px] font-bold tracking-super uppercase border border-white px-6 py-2">Reserved Out</span>
+                            </div>
+                            {% endif %}
+                        </a>
+                        <div class="space-y-2">
+                            <p class="text-[8px] text-gray-400 tracking-premium uppercase font-medium">{{ product.category.name }}</p>
+                            <h3 class="text-[11px] font-bold tracking-wide uppercase transition-opacity hover:opacity-60">
+                                <a href="{% url 'products:product_detail' product.slug %}">{{ product.name }}</a>
+                            </h3>
+                            <div class="flex items-center gap-4 pt-1">
+                                <span class="text-xs font-bold">₹{{ product.price|floatformat:0 }}</span>
+                                {% if product.original_price %}
+                                <span class="text-[10px] text-gray-400 line-through tracking-tighter">₹{{ product.original_price|floatformat:0 }}</span>
+                                {% endif %}
                             </div>
                         </div>
-                    </a>
+                    </div>
                     {% endfor %}
                 </div>
                 {% else %}
-                <div class="text-center py-20">
-                    <svg class="w-16 h-16 text-beige-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
-                    <h3 class="font-display text-xl text-gray-600 mb-2">No products found</h3>
-                    <p class="text-gray-400 font-body text-sm">Try adjusting your filters or browse all products.</p>
-                    <a href="{% url 'products:shop' %}" class="inline-block mt-4 text-maroon-700 font-body font-semibold text-sm hover:underline">Clear Filters</a>
+                <div class="py-32 text-center border-2 border-dashed border-brand-grey">
+                    <span class="text-4xl mb-6 block">✧</span>
+                    <h3 class="text-[10px] font-bold tracking-super uppercase text-brand-black mb-4">No Matching Styles</h3>
+                    <p class="text-[9px] text-gray-400 tracking-widest uppercase mb-8">Refine your search for the perfect professional look.</p>
+                    <a href="{% url 'products:shop' %}" class="inline-block px-12 py-4 bg-brand-black text-white text-[10px] font-bold tracking-premium uppercase">Clear All Filters</a>
                 </div>
                 {% endif %}
             </div>
