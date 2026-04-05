@@ -6,6 +6,7 @@ from django.views.decorators.csrf import csrf_exempt
 from products.models import Product
 from core.models import SiteSettings
 from .models import Order, OrderItem, PaymentProof
+from .utils import create_cashfree_order, verify_cashfree_payment
 
 
 def cart(request):
@@ -53,9 +54,32 @@ def place_order(request):
                 price=item['price'],
             )
 
-        return JsonResponse({'success': True, 'order_id': order.id})
+        # Create Cashfree Order if credentials exist
+        payment_session_id = create_cashfree_order(order, request)
+
+        return JsonResponse({
+            'success': True, 
+            'order_id': order.id,
+            'payment_session_id': payment_session_id
+        })
     except Exception as e:
         return JsonResponse({'success': False, 'error': str(e)}, status=400)
+
+
+def verify_payment(request, order_id):
+    order = get_object_or_404(Order, id=order_id)
+    cf_order_id = request.GET.get('order_id')
+    
+    if cf_order_id:
+        is_success = verify_cashfree_payment(cf_order_id)
+        if is_success:
+            order.status = 'confirmed'
+            order.notes += f"\nAutomated Payment Verified (CF Order ID: {cf_order_id})"
+            order.save()
+            return redirect('orders:order_success', order_id=order.id)
+    
+    # If verification fails or no cf_order_id, redirect to success but with pending status
+    return redirect('orders:order_success', order_id=order.id)
 
 
 @require_POST

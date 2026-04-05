@@ -48,6 +48,12 @@
 
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <style>
+        * {
+            margin: 0%;
+            padding: 0%;
+            scrollbar-width: thin;
+            scrollbar-color: #333333 #f5f5f5;
+        }
         .nav-link {
             position: relative;
         }
@@ -108,11 +114,11 @@
 <body class="font-sans bg-white text-brand-black min-h-screen flex flex-col selection:bg-brand-black selection:text-white">
 
     <!-- Announcement Bar -->
-    <div id="announcement-bar" class="bg-brand-black text-white text-[10px] md:text-xs py-2.5 px-4 text-center tracking-premium uppercase font-medium sticky top-0 z-[60] flex items-center justify-center transition-transform duration-500">
+    <div id="announcement-bar" class="bg-brand-black text-white text-[10px] md:text-xs py-2.5 px-4 text-center tracking-premium uppercase font-medium top-0 z-[60] flex items-center justify-center transition-transform duration-500">
         <span class="animate-pulse-soft flex-1">
             🔥 Flat 20% OFF on First Order | Use Code: <span class="text-brand-gold font-bold">OFF20</span>
         </span>
-        <button onclick="document.getElementById('announcement-bar').style.transform = 'translateY(-100%)'" class="absolute right-4 hover:text-brand-gold">
+        <button onclick="document.getElementById('announcement-bar').style.display = 'none';" class="absolute right-4 hover:text-brand-gold">
             <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
     </div>
@@ -197,15 +203,7 @@
         </div>
     </div>
 
-    <!-- Recent Purchase Notification -->
-    <div id="recent-purchase" class="fixed bottom-6 left-6 z-[80] bg-white border border-brand-grey p-4 shadow-2xl flex items-center gap-4 max-w-xs transition-all duration-500 translate-y-20 opacity-0">
-        <div class="w-12 h-16 bg-brand-grey flex-shrink-0 animate-pulse" id="recent-img"></div>
-        <div class="flex-1">
-            <p class="text-[8px] text-gray-400 font-bold tracking-widest uppercase mb-0.5">Verified Purchase</p>
-            <p class="text-[10px] font-bold tracking-premium uppercase" id="recent-text">Someone from Delhi just bought Formal Shirt</p>
-            <p class="text-[8px] text-brand-gold font-medium tracking-widest uppercase mt-1">2 mins ago</p>
-        </div>
-    </div>
+    
 
     <!-- Toast Container -->
     <div id="toast-container" class="fixed top-24 right-4 z-[100] flex flex-col gap-3"></div>
@@ -337,32 +335,6 @@
                 showPromoModal('Wait! One Last Look', 'Secure 10% OFF before you depart from our collection.', 'STAY10');
             }
         });
-
-        // 3. Recent Purchase Rotation
-        const names = ['Rohit', 'Siddharth', 'Vikram', 'Anjali', 'Sameer', 'Arjun', 'Isha'];
-        const cities = ['Delhi', 'Mumbai', 'Bangalore', 'Chennai', 'Pune', 'Hyderabad'];
-        const products = ['Formal Shirt', 'Slim-fit Trouser', 'Executive Blazer', 'Corporate Combo'];
-        
-        const showRecent = () => {
-            const recent = document.getElementById('recent-purchase');
-            if (!recent) return;
-            const name = names[Math.floor(Math.random() * names.length)];
-            const city = cities[Math.floor(Math.random() * cities.length)];
-            const product = products[Math.floor(Math.random() * products.length)];
-            
-            document.getElementById('recent-text').innerHTML = `${name} from ${city} just bought <span class="text-brand-black font-bold">${product}</span>`;
-            
-            recent.classList.remove('translate-y-20', 'opacity-0');
-            recent.classList.add('translate-y-0', 'opacity-100');
-            
-            setTimeout(() => {
-                recent.classList.add('translate-y-20', 'opacity-0');
-                recent.classList.remove('translate-y-0', 'opacity-100');
-            }, 6000);
-        };
-
-        setInterval(showRecent, 15000);
-        setTimeout(showRecent, 3000); // Initial trigger
     </script>
     {% block extra_js %}{% endblock %}
 </body>
